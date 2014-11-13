@@ -1,0 +1,12 @@
+
+
+how to create mind map in elm
+1. create node
+  a. Rectangle/ circle with text in middle
+2. Place node at appropriate location
+  a. create vertical layers to divide nodes based on depth.
+    i. use div to divide into partitions.
+  b. give horizontal offsets
+    i. This depend on the size of parent node
+3. Connect nodes with arrows/lines
+4. Enable interativity

@@ -1,0 +1,9 @@
+main : Element
+main = flow right
+       [ node "Node1"
+       , spacer 50 50
+       , node "Node2"
+       ]
+       
+node txt = color grey (container 100 50 middle (plainText txt))
+
