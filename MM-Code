@@ -1,12 +1,22 @@
 main : Element
-main = flow right
-       [ node "Node1"
+main = collage 500 500 (fullView)
+
+fullView : [Form]
+fullView = tree
+elseD = [ node "Node1"
        , spacer 30 30
        , node "Node2"
        , childNodes
        ]
-       
+
 node txt = color grey (container 100 50 middle (plainText txt))
+
+rootNode = toForm (node "root")
+
+tree = [rootNode, (moveX 130(toForm childNodes2))]
+
+childNodes2 = flow down ( intersperse (spacer 50 30) listNodes )
+listNodes = [node "n1", node "n2"]
 
 childNodes = collage 200 200 nodes 
 nodes = [nodeForm "n1", (moveY 70 (nodeForm "n2"))]
