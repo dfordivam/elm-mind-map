@@ -1,9 +1,13 @@
 main : Element
 main = flow right
        [ node "Node1"
-       , spacer 50 50
+       , spacer 30 30
        , node "Node2"
+       , childNodes
        ]
        
 node txt = color grey (container 100 50 middle (plainText txt))
 
+childNodes = collage 200 200 nodes 
+nodes = [nodeForm "n1", (moveY 70 (nodeForm "n2"))]
+nodeForm txt = toForm (node txt)
