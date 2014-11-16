@@ -1,23 +1,41 @@
 main : Element
 main = collage 500 500 (fullView)
-
+ 
 fullView : [Form]
 fullView = tree
 elseD = [ node "Node1"
-       , spacer 30 30
-       , node "Node2"
-       , childNodes
-       ]
-
+  , spacer 30 30
+  , node "Node2"
+  , childNodes
+  ]
+ 
 node txt = color grey (container 100 50 middle (plainText txt))
-
+ 
 rootNode = toForm (node "root")
-
+ 
 tree = [rootNode, (moveX 130(toForm childNodes2))]
-
+ 
 childNodes2 = flow down ( intersperse (spacer 50 30) listNodes )
 listNodes = [node "n1", node "n2"]
-
-childNodes = collage 200 200 nodes 
+ 
+childNodes = collage 200 200 nodes
 nodes = [nodeForm "n1", (moveY 70 (nodeForm "n2"))]
 nodeForm txt = toForm (node txt)
+
+
+---- Model -----
+-- Mind Map is a tree. The node can have multiple children
+-- 
+
+data MM_Node = MM_Node {
+    nodeName   : String,
+    childNodes : [MM_Node],
+    text       : String,
+    collapsed  : Bool
+    }
+
+
+---- View ----
+
+
+---- Update -----
