@@ -27,14 +27,18 @@ nodeForm txt = toForm (node txt)
 -- Mind Map is a tree. The node can have multiple children
 -- 
 
--- Can by type?
 data MM_Node = MM_Node 
     {  nodeName   : String
     ,  childNodes : [MM_Node]
     ,  text       : String
     ,  collapsed  : Bool
     ,  parentNode : MM_Node
-    }
+    } | MM_RootNode
+    { nodeName : String
+    ,  childNodes : [MM_Node]
+    ,  text       : String
+    ,  collapsed  : Bool
+    }    
 
 type State = 
     {  rootNode  : MM_Node
@@ -51,9 +55,10 @@ newMM_Node p = MM_Node
     ,  parentNode = p
     }
 
---emptyState : State
---emptyState = 
---    let rootNode = MM_Node
+emptyState : State
+emptyState = 
+    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
+    in { rootNode = root, editNode = root }
 ---- View ----
 
 
