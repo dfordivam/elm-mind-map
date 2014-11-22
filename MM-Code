@@ -1,6 +1,8 @@
 main : Element
-main = collage 500 500 (fullView)
- 
+main = view emptyState
+--main = collage 500 500 (fullView)
+
+
 fullView : [Form]
 fullView = tree
 elseD = [ node "Node1"
@@ -63,12 +65,17 @@ emptyState =
 ---- View ----
 
 view : State -> Element
-view state = collage 500 500 (fullView)
+view state = renderNode state.rootNode
 
 renderNodeTxt txt = color grey (container 100 50 middle (plainText txt))
 
 renderOneNode : MM_Node -> Element
-renderOneNode (MM_Node node) = renderNodeTxt node.text
+renderOneNode n = 
+    case n of 
+      (MM_Node node) ->
+        renderNodeTxt node.text
+      (MM_RootNode node) ->
+        renderNodeTxt node.text
 
 renderNode : MM_Node -> Element
 renderNode n =
