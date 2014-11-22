@@ -59,7 +59,27 @@ emptyState : State
 emptyState = 
     let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
     in { rootNode = root, editNode = root }
+    
 ---- View ----
 
+view : State -> Element
+view state = collage 500 500 (fullView)
 
+renderNodeTxt txt = color grey (container 100 50 middle (plainText txt))
+
+renderOneNode : MM_Node -> Element
+renderOneNode (MM_Node node) = renderNodeTxt node.text
+
+renderNode : MM_Node -> Element
+renderNode n =
+    case n of 
+      (MM_Node  node) ->
+        let childNodeMap = map renderNode node.childNodes
+            childMap = flow down ( intersperse (spacer 50 30) childNodeMap)
+        in flow right [(renderOneNode n), (spacer 50 50), childMap]
+      (MM_RootNode node) ->
+        let childNodeMap = map renderNode node.childNodes
+            childMap = flow down ( intersperse (spacer 50 30) childNodeMap)
+        in flow right [(renderOneNode n), (spacer 50 50), childMap]
+        
 ---- Update -----
