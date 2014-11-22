@@ -1,5 +1,5 @@
 main : Element
-main = view emptyState
+main = view (testState emptyState)
 --main = collage 500 500 (fullView)
 
 
@@ -48,11 +48,11 @@ type State =
     }
 
 -- Create a new node with given parent
-newMM_Node: MM_Node -> MM_Node
-newMM_Node p = MM_Node
+newMM_Node : MM_Node -> String -> MM_Node
+newMM_Node p val = MM_Node
     {  nodeName   = ""
     ,  childNodes = []
-    ,  text       = ""
+    ,  text       = val
     ,  collapsed  = False
     ,  parentNode = p
     }
@@ -61,7 +61,24 @@ emptyState : State
 emptyState = 
     let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
     in { rootNode = root, editNode = root }
-    
+
+addNode : MM_Node -> String -> MM_Node
+addNode n val = 
+    case n of
+      (MM_Node node) ->
+        let newN = newMM_Node n val
+            updatedChildList = newN :: node.childNodes
+        in MM_Node { node | childNodes <- updatedChildList }
+      (MM_RootNode node) ->
+        let newN = newMM_Node n val
+            updatedChildList = newN :: node.childNodes
+        in MM_RootNode { node | childNodes <- updatedChildList }
+
+testState : State -> State
+testState emptyS = 
+    let n1 = addNode emptyS.rootNode "n1"
+        n2 = addNode n1 "n2"
+    in { emptyS | rootNode <- n2 }
 ---- View ----
 
 view : State -> Element
