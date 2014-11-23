@@ -35,6 +35,7 @@ data MM_Node = MM_Node
     ,  text       : String
     ,  collapsed  : Bool
     ,  parentNode : MM_Node
+    ,  id         : Int 
     } | MM_RootNode
     { nodeName : String
     ,  childNodes : [MM_Node]
@@ -45,40 +46,65 @@ data MM_Node = MM_Node
 type State = 
     {  rootNode  : MM_Node
     ,  editNode  : MM_Node
+    ,  nodes     : [MM_Node] 
+    ,  uid       : Int
     }
 
 -- Create a new node with given parent
 newMM_Node : MM_Node -> String -> MM_Node
-newMM_Node p val = MM_Node
+newMM_Node p val i = MM_Node
     {  nodeName   = ""
     ,  childNodes = []
     ,  text       = val
     ,  collapsed  = False
     ,  parentNode = p
+    ,  id         = i
     }
 
 emptyState : State
 emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
-    in { rootNode = root, editNode = root }
+    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False, id = 0 }
+    in { rootNode = root, editNode = root , nodes = [root], uid = 0}
 
-addNode : MM_Node -> String -> MM_Node
-addNode n val = 
+-- How to add to tree
+-- 1. Create new empty node
+-- 2. "add" this node to the target node (ie create a new node from target)
+-- 3. update all the parent nodes (till root) with new nodes 
+--    (ie create a new tree, with new root and new nodes)
+
+addNode : MM_Node -> String -> Int -> (MM_Node, MM_Node)
+addNode n val i = 
     case n of
       (MM_Node node) ->
-        let newN = newMM_Node n val
+        let newN = newMM_Node n val i
             updatedChildList = newN :: node.childNodes
-        in MM_Node { node | childNodes <- updatedChildList }
+        in (MM_Node { node | childNodes <- updatedChildList }, newN)
       (MM_RootNode node) ->
-        let newN = newMM_Node n val
+        let newN = newMM_Node n val i
             updatedChildList = newN :: node.childNodes
-        in MM_RootNode { node | childNodes <- updatedChildList }
+        in (MM_Node { node | childNodes <- updatedChildList }, newN)
+
+-- Takes an input "new" node (which is part of new tree)
+-- Create a new parent node by replacing old node with "new" node
+-- recursively call the update on parent node till root
+-- This API will return a new root node for new tree
+updateNode : MM_Node -> MM_Node
+updateNode n = 
+    case n of
+      (MM_Node node) ->
+        let newParent = 
+        in updateNode newParent
+      (MM_RootNode node) ->
+        let
+        in
 
 testState : State -> State
 testState emptyS = 
     let n1 = addNode emptyS.rootNode "n1"
         n2 = addNode n1 "n2"
     in { emptyS | rootNode <- n2 }
+
+
 ---- View ----
 
 view : State -> Element
@@ -107,3 +133,19 @@ renderNode n =
         in flow right [(renderOneNode n), (spacer 50 50), childMap]
         
 ---- Update -----
+
+data Action
+    = NoOp
+    | AddNode Int
+
+step : Action -> State -> State
+step action state = 
+    case action of
+      NoOp -> state
+      
+      AddNode id ->
+        let node = filter (\n -> n.id == id) state.nodes
+            (updatedN, newNode) = addNode node "" (uid + 1)
+        in { state | uid <- (uid + 1), nodes <- nodes
+        
+      
