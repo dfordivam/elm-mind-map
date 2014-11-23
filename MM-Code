@@ -89,14 +89,21 @@ addNode n val i =
 -- recursively call the update on parent node till root
 -- This API will return a new root node for new tree
 updateNode : MM_Node -> MM_Node
-updateNode n = 
-    case n of
-      (MM_Node node) ->
+updateNode newN =
+    case newN of
+      (MM_Node node) -> 
         let newParent = 
+          case node.parent of 
+            (MM_Node parent)
+              let updatedChildList = newN : (filter (\n -> n.id /= id) parent.childNodes)
+              in (MM_Node { parent | childNodes <- updatedChildList})
+            (MM_RootNode parent) ->
+              let updatedChildList = newN : (filter (\n -> n.id /= id) parent.childNodes)
+              in (MM_RootNode { parent | childNodes <- updatedChildList})            
+            
         in updateNode newParent
       (MM_RootNode node) ->
-        let
-        in
+        newN
 
 testState : State -> State
 testState emptyS = 
