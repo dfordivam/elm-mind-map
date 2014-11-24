@@ -1,7 +1,18 @@
-main : Element
-main = view testState 
+import Graphics.Input as Input
+
+main : Signal Element
+main = lift view state 
 --main = collage 500 500 (fullView)
 
+-- manage the state of our application over time
+state : Signal State
+state = foldp step startingState actions.signal
+
+startingState = emptyState
+
+-- actions from user input
+actions : Input.Input Action
+actions = Input.input NoOp
 
 fullView : [Form]
 fullView = tree
@@ -134,15 +145,15 @@ testState = emptyState
 view : State -> Element
 view state = renderNode state.rootNode
 
-renderNodeTxt txt = color grey (container 100 50 middle (plainText txt))
+renderNodeTxt txt id = color grey (container 100 50 middle (plainText txt)) |> Input.clickable actions.handle (AddNode id)
 
 renderOneNode : MM_Node -> Element
 renderOneNode n = 
     case n of 
       (MM_Node node) ->
-        renderNodeTxt node.text
+        renderNodeTxt node.text node.id
       (MM_RootNode node) ->
-        renderNodeTxt node.text
+        renderNodeTxt node.text 0
 
 renderNode : MM_Node -> Element
 renderNode n =
