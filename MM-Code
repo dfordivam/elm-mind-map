@@ -74,15 +74,16 @@ emptyState =
 
 addNode : MM_Node -> String -> Int -> (MM_Node, MM_Node)
 addNode n val i = 
-    case n of
-      (MM_Node node) ->
-        let newN = newMM_Node n val i
-            updatedChildList = newN :: node.childNodes
-        in (MM_Node { node | childNodes <- updatedChildList }, newN)
-      (MM_RootNode node) ->
-        let newN = newMM_Node n val i
-            updatedChildList = newN :: node.childNodes
-        in (MM_Node { node | childNodes <- updatedChildList }, newN)
+    let 
+      newN = newMM_Node n val i
+      currentNode = case n of
+        (MM_Node node) ->
+          let updatedChildList = newN :: node.childNodes
+          in MM_Node { node | childNodes <- updatedChildList }
+        (MM_RootNode node) ->
+          let updatedChildList = newN :: node.childNodes
+          in MM_RootNode { node | childNodes <- updatedChildList }
+    in (updateNode currentNode, newN)
 
 -- Takes an input "new" node (which is part of new tree)
 -- Create a new parent node by replacing old node with "new" node
@@ -152,7 +153,7 @@ step action state =
       
       AddNode id ->
         let node = filter (\n -> n.id == id) state.nodes
-            (updatedN, newNode) = addNode node "" (uid + 1)
-        in { state | uid <- (uid + 1), nodes <- nodes
+            (updatedRoot, newNode) = addNode node "" (uid + 1)
+        in { state | uid <- (uid + 1), rootNode <- updatedRoot, editNode <- newNode }
         
       
