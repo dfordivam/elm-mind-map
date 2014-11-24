@@ -1,5 +1,5 @@
 main : Element
-main = view (testState emptyState)
+main = view testState 
 --main = collage 500 500 (fullView)
 
 
@@ -51,7 +51,7 @@ type State =
     }
 
 -- Create a new node with given parent
-newMM_Node : MM_Node -> String -> MM_Node
+newMM_Node : MM_Node -> String -> Int-> MM_Node
 newMM_Node p val i = MM_Node
     {  nodeName   = ""
     ,  childNodes = []
@@ -63,8 +63,24 @@ newMM_Node p val i = MM_Node
 
 emptyState : State
 emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False, id = 0 }
+    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
     in { rootNode = root, editNode = root , nodes = [root], uid = 0}
+
+removeNodeWithId : Int -> [MM_Node] -> [MM_Node]
+removeNodeWithId id (n::ns) = 
+    let foundNode = 
+      case n of
+        (MM_Node node) -> node.id == id
+        (MM_RootNode node) -> True -- This cannot happen, root cannot be in childList
+    in if foundNode then ns else n :: (removeNodeWithId id ns)
+ 
+getNodeWithId : Int -> [MM_Node] -> MM_Node
+getNodeWithId id (n::ns) = 
+    let foundNode = 
+      case n of
+        (MM_Node node) -> node.id == id
+        (MM_RootNode node) -> True -- This cannot happen, root cannot be in childList
+    in if foundNode then n else (getNodeWithId id ns)
 
 -- How to add to tree
 -- 1. Create new empty node
@@ -94,23 +110,23 @@ updateNode newN =
     case newN of
       (MM_Node node) -> 
         let newParent = 
-          case node.parent of 
-            (MM_Node parent)
-              let updatedChildList = newN : (filter (\n -> n.id /= id) parent.childNodes)
+          case (node.parentNode) of 
+            (MM_Node parent) ->
+              let updatedChildList = newN :: (removeNodeWithId node.id parent.childNodes)
               in (MM_Node { parent | childNodes <- updatedChildList})
             (MM_RootNode parent) ->
-              let updatedChildList = newN : (filter (\n -> n.id /= id) parent.childNodes)
+              let updatedChildList = newN :: (removeNodeWithId node.id parent.childNodes)
               in (MM_RootNode { parent | childNodes <- updatedChildList})            
             
         in updateNode newParent
       (MM_RootNode node) ->
         newN
 
-testState : State -> State
-testState emptyS = 
-    let n1 = addNode emptyS.rootNode "n1"
-        n2 = addNode n1 "n2"
-    in { emptyS | rootNode <- n2 }
+testState : State
+testState = emptyState
+--    let n1 = addNode emptyS.rootNode "n1"
+--        n2 = addNode n1 "n2"
+--    in { emptyS | rootNode <- n2 }
 
 
 ---- View ----
@@ -152,8 +168,8 @@ step action state =
       NoOp -> state
       
       AddNode id ->
-        let node = filter (\n -> n.id == id) state.nodes
-            (updatedRoot, newNode) = addNode node "" (uid + 1)
-        in { state | uid <- (uid + 1), rootNode <- updatedRoot, editNode <- newNode }
+        let node = getNodeWithId id state.nodes
+            (updatedRoot, newNode) = addNode node "" (state.uid + 1)
+        in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode }
         
       
