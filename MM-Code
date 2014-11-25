@@ -74,7 +74,7 @@ newMM_Node p val i = MM_Node
 
 emptyState : State
 emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "", collapsed = False }
+    let root = MM_RootNode { nodeName = "", childNodes = [], text = "root", collapsed = False }
     in { rootNode = root, editNode = root , nodes = [root], uid = 0}
 
 removeNodeWithId : Int -> [MM_Node] -> [MM_Node]
@@ -145,7 +145,7 @@ testState = emptyState
 view : State -> Element
 view state = renderNode state.rootNode
 
-renderNodeTxt txt id = color grey (container 100 50 middle (plainText txt)) |> Input.clickable actions.handle (AddNode id)
+renderNodeTxt txt id = color grey (container 100 50 middle (plainText (txt ++ (show id)))) |> Input.clickable actions.handle (AddNode id)
 
 renderOneNode : MM_Node -> Element
 renderOneNode n = 
@@ -180,7 +180,8 @@ step action state =
       
       AddNode id ->
         let node = getNodeWithId id state.nodes
-            (updatedRoot, newNode) = addNode node "" (state.uid + 1)
-        in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode }
+            updatedNodeList = newNode :: state.nodes
+            (updatedRoot, newNode) = addNode node "child" (state.uid + 1)
+        in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode, nodes <- updatedNodeList }
         
       
