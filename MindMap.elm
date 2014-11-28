@@ -1,3 +1,5 @@
+module MindMap where
+
 import Graphics.Input as Input
 
 main : Signal Element
