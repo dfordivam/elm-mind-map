@@ -1,5 +1,6 @@
 module MindMap where
 
+import Debug
 import Graphics.Input as Input
 
 main : Signal Element
@@ -104,7 +105,7 @@ getNodeWithId id (n::ns) =
 addNode : MM_Node -> String -> Int -> (MM_Node, MM_Node)
 addNode n val i = 
     let 
-      newN = newMM_Node n val i
+      newN = newMM_Node currentNode val i
       currentNode = case n of
         (MM_Node node) ->
           let updatedChildList = newN :: node.childNodes
@@ -112,7 +113,7 @@ addNode n val i =
         (MM_RootNode node) ->
           let updatedChildList = newN :: node.childNodes
           in MM_RootNode { node | childNodes <- updatedChildList }
-    in (updateNode currentNode, newN)
+    in (Debug.watch "up node" (updateNode currentNode), newN)
 
 -- Takes an input "new" node (which is part of new tree)
 -- Create a new parent node by replacing old node with "new" node
@@ -121,7 +122,7 @@ addNode n val i =
 updateNode : MM_Node -> MM_Node
 updateNode newN =
     case newN of
-      (MM_Node node) -> 
+      (MM_Node node) ->
         let newParent = 
           case (node.parentNode) of 
             (MM_Node parent) ->
@@ -130,10 +131,16 @@ updateNode newN =
             (MM_RootNode parent) ->
               let updatedChildList = newN :: (removeNodeWithId node.id parent.childNodes)
               in (MM_RootNode { parent | childNodes <- updatedChildList})            
-            
+          
         in updateNode newParent
       (MM_RootNode node) ->
         newN
+
+getAllNodes : MM_Node -> [MM_Node]
+getAllNodes n =
+    case n of
+      (MM_Node node) -> n :: (concat (map getAllNodes node.childNodes))
+      (MM_RootNode node) -> n :: (concat (map getAllNodes node.childNodes))
 
 testState : State
 testState = emptyState
@@ -177,12 +184,12 @@ data Action
 
 step : Action -> State -> State
 step action state = 
-    case action of
+    case Debug.watch "Current action : " action of
       NoOp -> state
       
       AddNode id ->
         let node = getNodeWithId id state.nodes
-            updatedNodeList = newNode :: state.nodes
+            updatedNodeList = Debug.watch "list" (getAllNodes updatedRoot)
             (updatedRoot, newNode) = addNode node "child" (state.uid + 1)
         in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode, nodes <- updatedNodeList }
         
