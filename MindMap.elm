@@ -91,8 +91,8 @@ getChildNodes n =
       (MM_Node node) -> node.childNodes
       (MM_RootNode node) -> node.childNodes
 -- 
-removeNodeWithId : Int -> [MM_Node] -> [MM_Node]
-removeNodeWithId id list = 
+replaceNode : Int -> MM_Node -> [MM_Node] -> [MM_Node]
+replaceNode id newN list = 
     if list == []
     then [] 
     else let n = head list
@@ -101,7 +101,7 @@ removeNodeWithId id list =
               case n of
                 (MM_Node node) -> node.id == id
                 (MM_RootNode node) -> True
-         in if foundNode then ns else n :: (removeNodeWithId id ns)
+         in if foundNode then (newN :: ns) else n :: (replaceNode id newN ns)
 
 -- Linear search in list for node
 getNodeWithId : Int -> [MM_Node] -> Maybe MM_Node
@@ -125,10 +125,10 @@ addNode r n val i =
       parents = reverse (findAllParents (getNodeID n) r)
       currentNode = case n of
         (MM_Node node) ->
-          let updatedChildList = newN :: node.childNodes
+          let updatedChildList = node.childNodes ++ [newN]
           in MM_Node { node | childNodes <- updatedChildList }
         (MM_RootNode node) ->
-          let updatedChildList = newN :: node.childNodes
+          let updatedChildList = node.childNodes ++ [newN]
           in MM_RootNode { node | childNodes <- updatedChildList }
     in ( (updateNode currentNode parents), newN)
 
@@ -164,10 +164,10 @@ updateNode newN list =
             let newParent = 
               case (head list) of 
                 (MM_Node parent) ->
-                  let updatedChildList = newN :: (removeNodeWithId node.id parent.childNodes)
+                  let updatedChildList = replaceNode node.id newN parent.childNodes
                   in (MM_Node { parent | childNodes <- updatedChildList})
                 (MM_RootNode parent) ->
-                  let updatedChildList = newN :: (removeNodeWithId node.id parent.childNodes)
+                  let updatedChildList = replaceNode node.id newN parent.childNodes
                   in (MM_RootNode { parent | childNodes <- updatedChildList})            
               
             in updateNode newParent (tail list)
