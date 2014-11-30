@@ -199,6 +199,13 @@ renderOneNode n =
       (MM_RootNode node) ->
         renderNodeTxt node.text 0
 
+evenAndOdd : Bool -> [Element] -> ([Element], [Element])
+evenAndOdd right list = 
+    if list == [] then ([],[]) 
+    else let n = head list
+             (l, r) = evenAndOdd (not right) (tail list)
+         in if right then (l, n :: r) else (n :: l, r)
+    
 renderNode : MM_Node -> Element
 renderNode n =
     case n of 
@@ -208,8 +215,10 @@ renderNode n =
         in flow right [(renderOneNode n), (spacer 50 50), childMap]
       (MM_RootNode node) ->
         let childNodeMap = map renderNode node.childNodes
-            childMap = flow down ( intersperse (spacer 50 30) childNodeMap)
-        in flow right [(renderOneNode n), (spacer 50 50), childMap]
+            (l, r)    = evenAndOdd True childNodeMap
+            childMapL = flow down ( intersperse (spacer 50 30) l)
+            childMapR = flow down ( intersperse (spacer 50 30) r)
+        in flow right [childMapL, (spacer 50 50 ), (renderOneNode n), (spacer 50 50), childMapR]
         
 ---- Update -----
 
