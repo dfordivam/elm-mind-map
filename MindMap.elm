@@ -187,7 +187,7 @@ testState = emptyState
 ---- View ----
 
 view : State -> Element
-view state = renderNode state.rootNode
+view state = renderNode state.rootNode right
 
 renderNodeTxt txt id = color grey (container 100 50 middle (plainText (txt ++ (show id)))) |> Input.clickable actions.handle (AddNode id)
 
@@ -206,15 +206,16 @@ evenAndOdd right list =
              (l, r) = evenAndOdd (not right) (tail list)
          in if right then (l, n :: r) else (n :: l, r)
     
-renderNode : MM_Node -> Element
-renderNode n =
+renderNode : MM_Node -> Direction -> Element
+renderNode n dir =
     case n of 
       (MM_Node  node) ->
-        let childNodeMap = map renderNode node.childNodes
+        let childNodeMap = map ((flip renderNode) dir) node.childNodes
             childMap = flow down ( intersperse (spacer 50 30) childNodeMap)
-        in flow right [(renderOneNode n), (spacer 50 50), childMap]
+        in flow dir [(renderOneNode n), (spacer 50 50), childMap]
       (MM_RootNode node) ->
-        let childNodeMap = map renderNode node.childNodes
+        let childNodeMap = zipWith renderNode node.childNodes directions
+            directions = [right, left, right, left, right]
             (l, r)    = evenAndOdd True childNodeMap
             childMapL = flow down ( intersperse (spacer 50 30) l)
             childMapR = flow down ( intersperse (spacer 50 30) r)
