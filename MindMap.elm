@@ -185,6 +185,10 @@ testState = emptyState
 
 
 ---- View ----
+-- There is a main frame to draw the whole map (It is big collage)
+-- The whole map is a big Form which can be moved around
+-- each subtree is Form group which is positioned inside a sub-collage
+--
 
 view : State -> Element
 view state = renderNode state.rootNode right
@@ -206,6 +210,10 @@ evenAndOdd right list =
              (l, r) = evenAndOdd (not right) (tail list)
          in if right then (l, n :: r) else (n :: l, r)
     
+-- How to create a sub-tree
+-- 1. Find the height of child nodes
+-- 2. create a container with that height and place root in middle
+-- 3. place the child subtrees on the right/left of this container
 renderNode : MM_Node -> Direction -> Element
 renderNode n dir =
     case n of 
