@@ -210,6 +210,17 @@ evenAndOdd right list =
              (l, r) = evenAndOdd (not right) (tail list)
          in if right then (l, n :: r) else (n :: l, r)
 
+renderChildSubtree : [MM_Node] -> Direction -> Element
+renderChildSubtree nodes dir = 
+        let childNodeMap = map ((flip renderNode) dir) nodes
+            childMap = ( intersperse (size 100 30 (spacer 100 30)) childNodeMap)
+            height0 = map heightOf childMap
+            height1 = if isEmpty height0 then 50 else sum height0
+            width0  = map widthOf  childMap
+            width1  = if isEmpty width0 then 0 else maximum width0
+        in  container width1 height1 middle (flow down childMap)
+
+
 -- How to create a sub-tree
 -- 1. Find the height of child nodes
 -- 2. create a container with that height and place root in middle
@@ -218,28 +229,12 @@ renderNode : MM_Node -> Direction -> Element
 renderNode n dir =
     case n of 
       (MM_Node  node) ->
-        let childNodeMap = map ((flip renderNode) dir) node.childNodes
-            childMap = ( intersperse (size 100 30 (spacer 100 30)) childNodeMap)
-            tempMap = [(renderOneNode n 50), (size 50 50 (spacer 50 30))]
-            height0 = map heightOf childMap
-            height1 = if isEmpty height0 then 50 else sum height0
-            width0  = map widthOf  childMap
-            width1  = if isEmpty width0 then 0 else maximum width0
-            childCont = container width1 height1 middle (flow down childMap)
-            newCont = container (width1 + 150) height1 middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
-            size3 = Debug.watch "size" (sizeOf newCont)
+        let childCont = renderChildSubtree node.childNodes dir
+            newCont = container (widthOf childCont + 150) (heightOf childCont) middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
         in newCont
       (MM_RootNode node) ->
-        let childNodeMap = map ((flip renderNode) dir) node.childNodes
-            childMap = ( intersperse (size 100 30 (spacer 100 30)) childNodeMap)
-            tempMap = [(renderOneNode n 50), (size 50 50 (spacer 50 30))]
-            height0 = map heightOf childMap
-            height1 = if isEmpty height0 then 50 else sum height0
-            width0  = map widthOf  childMap
-            width1  = if isEmpty width0 then 0 else maximum width0
-            childCont = container width1 height1 middle (flow down childMap)
-            newCont = container (width1 + 150) height1 middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
-            size3 = Debug.watch "size" (sizeOf newCont)
+        let childCont = renderChildSubtree node.childNodes dir
+            newCont = container (widthOf childCont + 150) (heightOf childCont) middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
         in newCont
 --        let childNodeMap = zipWith renderNode node.childNodes directions
 --            directions = [right, left, right, left, right]
