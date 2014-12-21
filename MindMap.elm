@@ -201,9 +201,9 @@ renderOneNode n height =
       (MM_Node node) ->
         size 100 height (container 100 height middle (renderNodeTxt node.text node.id))
       (MM_RootNode node) ->
-        renderNodeTxt node.text 0
+        size 100 height (container 100 height middle (renderNodeTxt node.text 0))
 
-evenAndOdd : Bool -> [Element] -> ([Element], [Element])
+evenAndOdd : Bool -> [a] -> ([a], [a])
 evenAndOdd right list = 
     if list == [] then ([],[]) 
     else let n = head list
@@ -228,13 +228,17 @@ renderChildSubtree nodes dir =
 renderNode : MM_Node -> Direction -> Element
 renderNode n dir =
     case n of 
-      (MM_Node  node) ->
+      (MM_Node node) ->
         let childCont = renderChildSubtree node.childNodes dir
-            newCont = container (widthOf childCont + 150) (heightOf childCont) middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
+            newCont = container (widthOf childCont + 150) (heightOf childCont) middle (flow dir [renderOneNode n (heightOf childCont), size 50 50 (spacer 50 50), childCont])
         in newCont
       (MM_RootNode node) ->
-        let childCont = renderChildSubtree node.childNodes dir
-            newCont = container (widthOf childCont + 150) (heightOf childCont) middle (flow dir [color blue (renderOneNode n 50), size 50 50 (color green (spacer 50 50)), childCont])
+        let (l, r)    = evenAndOdd True node.childNodes
+            childContL = renderChildSubtree l left
+            childContR = renderChildSubtree r right
+            width = widthOf childContL + widthOf childContR + 150
+            height = maximum [100, heightOf childContL, heightOf childContR]
+            newCont = container width height middle (flow right [childContL, size 50 50 (spacer 50 50), renderOneNode n height, size 50 50 (spacer 50 50), childContR])
         in newCont
 --        let childNodeMap = zipWith renderNode node.childNodes directions
 --            directions = [right, left, right, left, right]
