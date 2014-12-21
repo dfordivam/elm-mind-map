@@ -210,15 +210,20 @@ evenAndOdd right list =
              (l, r) = evenAndOdd (not right) (tail list)
          in if right then (l, n :: r) else (n :: l, r)
 
+createChildSubtreeContainer : Int -> Position -> Int -> Element -> Element
+createChildSubtreeContainer w p h e = container w h p e
+
 renderChildSubtree : [MM_Node] -> Direction -> Element
 renderChildSubtree nodes dir = 
         let childNodeMap = map ((flip renderNode) dir) nodes
             childMap = ( intersperse (size 100 30 (spacer 100 30)) childNodeMap)
             height0 = map heightOf childMap
             height1 = if isEmpty height0 then 50 else sum height0
-            width0  = map widthOf  childMap
+            width0  = map widthOf childMap
             width1  = if isEmpty width0 then 0 else maximum width0
-        in  container width1 height1 middle (flow down childMap)
+            position = if dir == right then midLeft else midRight
+            containers = zipWith (createChildSubtreeContainer width1 position) height0 childMap
+        in  container width1 height1 position (flow down containers)
 
 
 -- How to create a sub-tree
