@@ -18,28 +18,6 @@ startingState = emptyState
 actions : Input.Input Action
 actions = Input.input NoOp
 
-fullView : [Form]
-fullView = tree
-elseD = [ node "Node1"
-  , spacer 30 30
-  , node "Node2"
-  , childNodes
-  ]
- 
-node txt = color grey (container 100 50 middle (plainText txt))
- 
-rootNode = toForm (node "root")
- 
-tree = [rootNode, (moveX 130(toForm childNodes2))]
- 
-childNodes2 = flow down ( intersperse (spacer 50 30) listNodes )
-listNodes = [node "n1", node "n2"]
- 
-childNodes = collage 200 200 nodes
-nodes = [nodeForm "n1", (moveY 70 (nodeForm "n2"))]
-nodeForm txt = toForm (node txt)
-
-
 ---- Model -----
 -- Mind Map is a tree. The node can have multiple children
 -- 
@@ -64,7 +42,7 @@ type State =
     ,  uid       : Int
     }
 
--- Create a new node with given parent
+-- Create a new node with given id
 newMM_Node : String -> Int-> MM_Node
 newMM_Node val i = MM_Node
     {  nodeName   = ""
@@ -213,6 +191,10 @@ evenAndOdd right list =
 createChildSubtreeContainer : Int -> Position -> Int -> Element -> Element
 createChildSubtreeContainer w p h e = container w h p e
 
+-- How to create a sub-tree
+-- 1. Find the height of child nodes
+-- 2. create a container with that height and place root in middle
+-- 3. place the child subtrees on the right/left of this container
 renderChildSubtree : [MM_Node] -> Direction -> Element
 renderChildSubtree nodes dir = 
         let childNodeMap = map ((flip renderNode) dir) nodes
@@ -226,10 +208,6 @@ renderChildSubtree nodes dir =
         in  container width1 height1 position (flow down containers)
 
 
--- How to create a sub-tree
--- 1. Find the height of child nodes
--- 2. create a container with that height and place root in middle
--- 3. place the child subtrees on the right/left of this container
 renderNode : MM_Node -> Direction -> Element
 renderNode n dir =
     case n of 
@@ -245,12 +223,6 @@ renderNode n dir =
             height = maximum [100, heightOf childContL, heightOf childContR]
             newCont = container width height middle (flow right [childContL, size 50 50 (spacer 50 50), renderOneNode n height, size 50 50 (spacer 50 50), childContR])
         in newCont
---        let childNodeMap = zipWith renderNode node.childNodes directions
---            directions = [right, left, right, left, right]
---            (l, r)    = evenAndOdd True childNodeMap
---            childMapL = flow down ( intersperse (spacer 50 30) l)
---            childMapR = flow down ( intersperse (spacer 50 30) r)
---        in flow right [childMapL, (spacer 50 50 ), (renderOneNode n 100), (spacer 50 50), childMapR]
         
 ---- Update -----
 
