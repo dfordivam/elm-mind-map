@@ -9,9 +9,10 @@ import Graphics.Input
 import List (..)
 import Color (..)
 import Text
+import Window
 
 main : Signal Element
-main = Signal.map view state 
+main = Signal.map2 view Window.dimensions state 
 --main = collage 500 500 (fullView)
 
 -- manage the state of our application over time
@@ -177,8 +178,8 @@ testState = emptyState
 -- each subtree is Form group which is positioned inside a sub-collage
 --
 
-view : State -> Element
-view state = renderNode state.rootNode right
+view :(Int, Int) -> State -> Element
+view dimension state = renderNode state.rootNode right
 
 renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) |> Graphics.Input.clickable (Signal.send clicks (AddNode id)))
 
