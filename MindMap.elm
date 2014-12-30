@@ -6,6 +6,7 @@ import Maybe
 import Signal
 import Graphics.Element (..)
 import Graphics.Input
+import Graphics.Collage (..)
 import List (..)
 import Color (..)
 import Text
@@ -13,7 +14,6 @@ import Window
 
 main : Signal Element
 main = Signal.map2 view Window.dimensions state 
---main = collage 500 500 (fullView)
 
 -- manage the state of our application over time
 state : Signal State
@@ -178,8 +178,12 @@ testState = emptyState
 -- each subtree is Form group which is positioned inside a sub-collage
 --
 
-view :(Int, Int) -> State -> Element
-view dimension state = renderNode state.rootNode right
+view : (Int, Int) -> State -> Element
+view (w,h) state =
+    let mindmap = collage w (h - 50) [toForm ( renderNode state.rootNode right)]
+        fullWindow = toForm ( container w h middle (flow down [(spacer 50 50), mindmap]))
+    in collage w h [fullWindow]
+
 
 renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) |> Graphics.Input.clickable (Signal.send clicks (AddNode id)))
 
