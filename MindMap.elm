@@ -3,42 +3,51 @@ module MindMap where
 import Debug
 import Graphics.Input as Input
 import Maybe
+import Signal
+import Graphics.Element (..)
+import Graphics.Input
+import List (..)
+import Color (..)
+import Text
 
 main : Signal Element
-main = lift view state 
+main = Signal.map view state 
 --main = collage 500 500 (fullView)
 
 -- manage the state of our application over time
 state : Signal State
-state = foldp step startingState actions.signal
+state = Signal.foldp step startingState (Signal.subscribe clicks)
 
 startingState = emptyState
 
+clicks : Signal.Channel Action
+clicks = Signal.channel NoOp
+
 -- actions from user input
-actions : Input.Input Action
-actions = Input.input NoOp
+-- actions : Signal.Input Action
+-- actions = Signal.Input.input NoOp
 
 ---- Model -----
 -- Mind Map is a tree. The node can have multiple children
 -- 
 
-data MM_Node = MM_Node 
+type MM_Node = MM_Node 
     {  nodeName   : String
-    ,  childNodes : [MM_Node]
+    ,  childNodes : List MM_Node
     ,  text       : String
     ,  collapsed  : Bool
     ,  id         : Int 
     } | MM_RootNode
     { nodeName : String
-    ,  childNodes : [MM_Node]
+    ,  childNodes : List MM_Node
     ,  text       : String
     ,  collapsed  : Bool
     }    
 
-type State = 
+type alias State = 
     {  rootNode  : MM_Node
     ,  editNode  : MM_Node
-    ,  nodes     : [MM_Node] 
+    ,  nodes     : List MM_Node
     ,  uid       : Int
     }
 
@@ -63,13 +72,13 @@ getNodeID n =
       (MM_Node node) -> node.id
       (MM_RootNode node) -> 0
 
-getChildNodes : MM_Node -> [MM_Node]
+getChildNodes : MM_Node -> List MM_Node
 getChildNodes n = 
     case n of
       (MM_Node node) -> node.childNodes
       (MM_RootNode node) -> node.childNodes
 -- 
-replaceNode : Int -> MM_Node -> [MM_Node] -> [MM_Node]
+replaceNode : Int -> MM_Node -> List MM_Node -> List MM_Node
 replaceNode id newN list = 
     if list == []
     then [] 
@@ -82,7 +91,7 @@ replaceNode id newN list =
          in if foundNode then (newN :: ns) else n :: (replaceNode id newN ns)
 
 -- Linear search in list for node
-getNodeWithId : Int -> [MM_Node] -> Maybe MM_Node
+getNodeWithId : Int -> List MM_Node -> Maybe MM_Node
 getNodeWithId id list = 
     if list == [] 
     then Nothing 
@@ -122,7 +131,7 @@ dfsNode id r =
 
 -- Get list of all parent nodes
 -- Node ID -> Root Node -> [Root :: All other parents]
-findAllParents : Int -> MM_Node -> [MM_Node]
+findAllParents : Int -> MM_Node -> List MM_Node
 findAllParents id r = if (id == getNodeID r) then [] else
     let foundNode = dfsNode id r
     in if foundNode 
@@ -134,7 +143,7 @@ findAllParents id r = if (id == getNodeID r) then [] else
 -- recursively call the update on parent node till root
 -- This API will return a new root node for new tree
 -- InputNode -> ParentNodes -> NewRoot
-updateNode : MM_Node -> [MM_Node] -> MM_Node
+updateNode : MM_Node -> List MM_Node -> MM_Node
 updateNode newN list =
     if list == [] then newN else
         case newN of
@@ -152,7 +161,7 @@ updateNode newN list =
           (MM_RootNode node) ->
             newN
 
-getAllNodes : MM_Node -> [MM_Node]
+getAllNodes : MM_Node -> List MM_Node
 getAllNodes n = n :: concat (map getAllNodes (getChildNodes n))
 
 testState : State
@@ -171,7 +180,7 @@ testState = emptyState
 view : State -> Element
 view state = renderNode state.rootNode right
 
-renderNodeTxt txt id = (color grey (container 100 50 middle (plainText (txt ++ (show id)))) |> Input.clickable actions.handle (AddNode id))
+renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) |> Graphics.Input.clickable (Signal.send clicks (AddNode id)))
 
 renderOneNode : MM_Node -> Int -> Element
 renderOneNode n height = 
@@ -181,7 +190,7 @@ renderOneNode n height =
       (MM_RootNode node) ->
         size 100 height (container 100 height middle (renderNodeTxt node.text 0))
 
-evenAndOdd : Bool -> [a] -> ([a], [a])
+evenAndOdd : Bool -> List a -> (List a, List a)
 evenAndOdd right list = 
     if list == [] then ([],[]) 
     else let n = head list
@@ -195,7 +204,7 @@ createChildSubtreeContainer w p h e = container w h p e
 -- 1. Find the height of child nodes
 -- 2. create a container with that height and place root in middle
 -- 3. place the child subtrees on the right/left of this container
-renderChildSubtree : [MM_Node] -> Direction -> Element
+renderChildSubtree : List MM_Node -> Direction -> Element
 renderChildSubtree nodes dir = 
         let childNodeMap = map ((flip renderNode) dir) nodes
             childMap = ( intersperse (size 100 30 (spacer 100 30)) childNodeMap)
@@ -204,7 +213,7 @@ renderChildSubtree nodes dir =
             width0  = map widthOf childMap
             width1  = if isEmpty width0 then 0 else maximum width0
             position = if dir == right then midLeft else midRight
-            containers = zipWith (createChildSubtreeContainer width1 position) height0 childMap
+            containers = map2 (createChildSubtreeContainer width1 position) height0 childMap
         in  container width1 height1 position (flow down containers)
 
 
@@ -226,7 +235,7 @@ renderNode n dir =
         
 ---- Update -----
 
-data Action
+type Action
     = NoOp
     | AddNode Int
 
@@ -236,7 +245,7 @@ step action state =
       NoOp -> state
       
       AddNode id ->
-        let node = Maybe.maybe state.rootNode (\x -> x) (getNodeWithId id state.nodes)
+        let node = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
             updatedNodeList = (getAllNodes updatedRoot)
             (updatedRoot, newNode) = addNode state.rootNode node "child" (state.uid + 1)
         in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode, nodes <- updatedNodeList }
