@@ -43,13 +43,13 @@ newMM_Node val i = MM_Node
     {  nodeName   = ""
     ,  childNodes = []
     ,  text       = val
-    ,  collapsed  = False
+    ,  folded     = False
     ,  id         = i
     }
 
 emptyState : State
 emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "root", collapsed = False }
+    let root = MM_RootNode { nodeName = "", childNodes = [], text = "root" }
     in { rootNode = root, editNode = root , nodes = [root], uid = 0}
 
 getNodeID : MM_Node -> Int
