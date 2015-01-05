@@ -11,6 +11,7 @@ import List (..)
 import Color (..)
 import Text
 import Window
+import MM_Node (..)
 
 main : Signal Element
 main = Signal.map2 view Window.dimensions state 
@@ -24,26 +25,9 @@ startingState = emptyState
 clicks : Signal.Channel Action
 clicks = Signal.channel NoOp
 
--- actions from user input
--- actions : Signal.Input Action
--- actions = Signal.Input.input NoOp
-
 ---- Model -----
 -- Mind Map is a tree. The node can have multiple children
 -- 
-
-type MM_Node = MM_Node 
-    {  nodeName   : String
-    ,  childNodes : List MM_Node
-    ,  text       : String
-    ,  collapsed  : Bool
-    ,  id         : Int 
-    } | MM_RootNode
-    { nodeName : String
-    ,  childNodes : List MM_Node
-    ,  text       : String
-    ,  collapsed  : Bool
-    }    
 
 type alias State = 
     {  rootNode  : MM_Node
@@ -52,6 +36,7 @@ type alias State =
     ,  uid       : Int
     }
 
+-- Some APIs to work with Model
 -- Create a new node with given id
 newMM_Node : String -> Int-> MM_Node
 newMM_Node val i = MM_Node
@@ -105,6 +90,7 @@ getNodeWithId id list =
 -- 2. Get a list of all parent nodes till root
 -- 3. update all the parent nodes (starting from root) with new nodes 
 --    (ie create a new tree, with new root and new nodes)
+
 -- root -> node -> val -> id -> (newRoot, newNode)
 addNode : MM_Node -> MM_Node -> String -> Int -> (MM_Node, MM_Node)
 addNode r n val i = 
@@ -167,16 +153,16 @@ getAllNodes n = n :: concat (map getAllNodes (getChildNodes n))
 
 testState : State
 testState = emptyState
---    let n1 = addNode emptyS.rootNode "n1"
---        n2 = addNode n1 "n2"
---    in { emptyS | rootNode <- n2 }
-
 
 ---- View ----
 -- There is a main frame to draw the whole map (It is big collage)
--- The whole map is a big Form which can be moved around
--- each subtree is Form group which is positioned inside a sub-collage
+-- The view has a header with controls and the rest is occupied with the map
 --
+-- Header view
+-- Edit Button
+
+-- Mind map
+-- 
 
 view : (Int, Int) -> State -> Element
 view (w,h) state =
@@ -185,7 +171,7 @@ view (w,h) state =
     in collage w h [fullWindow]
 
 
-renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) |> Graphics.Input.clickable (Signal.send clicks (AddNode id)))
+renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
 
 renderOneNode : MM_Node -> Int -> Element
 renderOneNode n height = 
@@ -242,13 +228,18 @@ renderNode n dir =
 
 type Action
     = NoOp
+    | SelectNode Int
     | AddNode Int
 
 step : Action -> State -> State
 step action state = 
     case Debug.watch "Current action : " action of
       NoOp -> state
-      
+
+      SelectNode id ->
+        let selectedNode = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
+        in { state | editNode <- selectedNode }
+
       AddNode id ->
         let node = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
             updatedNodeList = (getAllNodes updatedRoot)
