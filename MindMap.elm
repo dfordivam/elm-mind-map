@@ -32,6 +32,7 @@ clicks = Signal.channel NoOp
 type alias State = 
     {  rootNode  : MM_Node
     ,  editNode  : MM_Node
+    ,  selectedNodes : List Int
     ,  nodes     : List MM_Node
     ,  uid       : Int
     }
@@ -50,7 +51,7 @@ newMM_Node val i = MM_Node
 emptyState : State
 emptyState = 
     let root = MM_RootNode { nodeName = "", childNodes = [], text = "root" }
-    in { rootNode = root, editNode = root , nodes = [root], uid = 0}
+    in { rootNode = root, editNode = root, selectedNodes = [0], nodes = [root], uid = 0}
 
 getNodeID : MM_Node -> Int
 getNodeID n = 
@@ -238,7 +239,7 @@ step action state =
 
       SelectNode id ->
         let selectedNode = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
-        in { state | editNode <- selectedNode }
+        in { state | editNode <- selectedNode, selectedNodes <- [id] }
 
       AddNode id ->
         let node = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
