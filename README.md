@@ -1,10 +1,8 @@
-elm-mind-map
-============
-
 Elm based mind mapping
 
-Commands :
-elm --make --only-js MindMap.elm
-elm-reactor
+Use elm-0.14
 
-open http://localhost:8000/MindMap.html
+Commands :
+elm-make MindMap.elm --output build/MindMap.js
+
+MindMap.html
