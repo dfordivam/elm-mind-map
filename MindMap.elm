@@ -10,6 +10,7 @@ import Graphics.Element (..)
 -- My imports
 import RenderMap
 import MM_Node (..)
+import MapState (..)
 
 main : Signal Element
 main = Signal.map2 RenderMap.view Window.dimensions state 
@@ -22,18 +23,6 @@ startingState = emptyState
 
 clicks : Signal.Channel Action
 clicks = Signal.channel NoOp
-
----- Model -----
--- Mind Map is a tree. The node can have multiple children
--- 
-
-type alias State = 
-    {  rootNode  : MM_Node
-    ,  editNode  : MM_Node
-    ,  selectedNodes : List Int
-    ,  nodes     : List MM_Node
-    ,  uid       : Int
-    }
 
 -- Some APIs to work with Model
 -- Create a new node with given id
