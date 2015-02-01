@@ -11,25 +11,18 @@ import Graphics.Element (..)
 import RenderMap
 import MM_Node (..)
 import MapState (..)
+import MM_Action (..)
 
 main : Signal Element
 main = Signal.map2 RenderMap.view Window.dimensions state 
 
 -- manage the state of our application over time
 state : Signal State
-state = Signal.foldp step startingState (Signal.subscribe clicks)
+state = Signal.foldp step startingState (Signal.subscribe mm_channel)
 
 startingState = emptyState
 
-clicks : Signal.Channel Action
-clicks = Signal.channel NoOp
-
 ---- Update -----
-
-type Action
-    = NoOp
-    | SelectNode Int
-    | AddNode Int
 
 step : Action -> State -> State
 step action state = 
