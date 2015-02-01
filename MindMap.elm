@@ -35,11 +35,6 @@ newMM_Node val i = MM_Node
     ,  id         = i
     }
 
-emptyState : State
-emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "root" }
-    in { rootNode = root, editNode = root, selectedNodes = [0], nodes = [root], uid = 0}
-
 getNodeID : MM_Node -> Int
 getNodeID n = 
     case n of
@@ -139,13 +134,6 @@ updateNode newN list =
 getAllNodes : MM_Node -> List MM_Node
 getAllNodes n = n :: concat (map getAllNodes (getChildNodes n))
 
-testState : State
-testState = emptyState
-
-
-
-
-        
 ---- Update -----
 
 type Action

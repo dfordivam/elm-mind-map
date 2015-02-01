@@ -8,19 +8,25 @@ import Color (..)
 import MM_Node (..)
 -- Tree of rendered nodes
 
-type alias RenderNode =
+type RenderNode 
+    = RenderNode
     {   form        :   Form
     ,   selected    :   Bool
     ,   uid         :   Int
     ,   childNodes  :   List RenderNode
     }
 
+createNodeForm : MM_Node -> Form
+createNodeForm n = filled grey (rect 50 100)
+
+getNodeId _ = 0
+getChildNodes _ = []
+
 renderMM_Node : MM_Node -> RenderNode
-renderMM_Node n = 
-    let f = createNodeForm n
-        id = getNodeId n
-        children = map renderMM_Node (getChildNodes n)
-    in {f, False, id, children}
+renderMM_Node n = RenderNode {
+            form = createNodeForm n
+       ,    selected = False
+       ,    uid = getNodeId n
+       ,    childNodes = map renderMM_Node (getChildNodes n)
+   }
         
-renderMindMap : RenderNode -> (Int, Int) -> Element
-renderMindMap n (w,h) = collage w (h -50) [n.form]
