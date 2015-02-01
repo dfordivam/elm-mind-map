@@ -4,8 +4,12 @@ import Graphics.Element (..)
 import Graphics.Collage (..)
 import List (..)
 import Color (..)
+import Text
+import Graphics.Input
+import Signal
 
 import MM_Node (..)
+import MM_Action (..)
 -- Tree of rendered nodes
 
 type RenderNode 
@@ -17,7 +21,7 @@ type RenderNode
     }
 
 createNodeForm : MM_Node -> Form
-createNodeForm n = filled grey (rect 50 100)
+createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText ("Root" ))) |> Graphics.Input.clickable (Signal.send mm_channel (AddNode (getNodeId n))))
 
 getNodeId _ = 0
 getChildNodes _ = []
