@@ -21,7 +21,8 @@ type RenderNode
     }
 
 createNodeForm : MM_Node -> Form
-createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText ("Root" ))) |> Graphics.Input.clickable (Signal.send mm_channel (AddNode (getNodeId n))))
+createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText ("Dummy Node" ))) 
+    |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode (getNodeId n))))
 
 getNodeId _ = 0
 getChildNodes _ = []
