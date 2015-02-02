@@ -1,6 +1,7 @@
 module MM_Node where
 
 import List (..)
+import Array (..)
 
 -- Schema for node from freeplane
 -- <xs:element name='node'>
@@ -51,9 +52,9 @@ import List (..)
 --  </xs:complexType>
 -- </xs:element>
 
+
 type MM_Node = MM_Node 
     {  nodeName   : String
-    ,  childNodes : List MM_Node
     ,  text       : String
     ,  folded     : Bool
     ,  id         : Int
