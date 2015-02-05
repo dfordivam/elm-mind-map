@@ -6,37 +6,43 @@ import Signal
 import List (..)
 import Window
 import Graphics.Element (..)
+import Array
 
 -- My imports
 import RenderMap
 import MM_Node (..)
-import MapState (..)
+import MM_State (..)
 import MM_Action (..)
+import MM_Tree (..)
 
 main : Signal Element
 main = Signal.map2 RenderMap.view Window.dimensions state 
 
 -- manage the state of our application over time
-state : Signal State
+state : Signal MM_State
 state = Signal.foldp step startingState (Signal.subscribe mm_channel)
 
 startingState = emptyState
 
 ---- Update -----
 
-step : Action -> State -> State
+step : Action -> MM_State -> MM_State
 step action state = 
     case Debug.watch "Current action : " action of
       NoOp -> state
 
       SelectNode id ->
-        let selectedNode = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
+        let selectedNode = getNodeWithId id state
         in { state | editNode <- selectedNode, selectedNodes <- [id] }
 
       AddNode id ->
-        let node = Maybe.withDefault state.rootNode (getNodeWithId id state.nodes)
-            updatedNodeList = (getAllNodes updatedRoot)
-            (updatedRoot, newNode) = addNode state.rootNode node "child" (state.uid + 1)
-        in { state | uid <- (state.uid + 1), rootNode <- updatedRoot, editNode <- newNode, nodes <- updatedNodeList }
-        
-      
+        let node = getTreeNodeWithId id state.rootNode
+            newN = newMM_Node "" newId
+            newId = (state.uid + 1)
+            updatedRoot = addNode state.rootNode node (state.uid + 1)
+        in { state | 
+                uid <- newId
+           ,    rootNode <- updatedRoot
+           ,    editNode <- newN
+           ,    nodes <- Array.set newId newN (Array.fromList [])
+       }

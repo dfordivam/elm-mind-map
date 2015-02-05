@@ -1,22 +1,41 @@
-module MapState where
+module MM_State where
+
+import Array (..)
+import Maybe
 
 import MM_Node (..)
 import RenderNode (..)
+import MM_Tree (..)
 ---- Model -----
--- Mind Map is a tree. The node can have multiple children
--- 
+-- Mind Map is a tree. 
+-- The individual nodes are represented by MM_Node.
+-- MM_Tree captures the heirarchy
+-- The two are mapped by id
 
-type alias State = 
-    {  rootNode  : MM_Node
-    ,  editNode  : MM_Node
-    ,  selectedNodes : List Int
-    ,  nodes     : List MM_Node
-    ,  uid       : Int
-    ,  rootRNode : RenderNode
+type alias MM_State = 
+    {  rootNode         : MM_Tree
+    ,  rootMNode        : MM_Node
+    ,  editNode         : MM_Node
+    ,  selectedNodes    : List Int
+    ,  nodes            : Array MM_Node
+    ,  uid              : Int
+    ,  renderNodes      : Array RenderNode
     }
 
 
-emptyState : State
+emptyState : MM_State
 emptyState = 
-    let root = MM_RootNode { nodeName = "", childNodes = [], text = "root" }
-    in { rootNode = root, editNode = root, selectedNodes = [0], nodes = [root], uid = 0, rootRNode = renderMM_Node root}
+    let root = MM_Tree { id = 0, childNodes = []}
+        rootN = { nodeName = "Root", text = "", folded = False, id = 0 } 
+    in { 
+            rootNode = root
+       ,    rootMNode = rootN
+       ,    editNode = rootN
+       ,    selectedNodes = [0]
+       ,    nodes = fromList [rootN]
+       ,    uid = 0
+       ,    renderNodes = fromList [renderMM_Node rootN]
+   }
+
+getNodeWithId : Int -> MM_State -> MM_Node
+getNodeWithId id state = Maybe.withDefault state.rootMNode (get id state.nodes)

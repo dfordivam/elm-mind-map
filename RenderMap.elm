@@ -9,7 +9,7 @@ import Signal
 import Text
 
 import MM_Node (..)
-import MapState (..)
+import MM_State (..)
 import RenderNode (..)
 
 ---- View ----
@@ -22,14 +22,14 @@ import RenderNode (..)
 -- Mind map
 -- 
 
-view : (Int, Int) -> State -> Element
+view : (Int, Int) -> MM_State -> Element
 view (w,h) state =
-    let mindmap = renderTree state.rootRNode (w,h)
+    let mindmap = renderTree state (w,h)
         fullWindow = toForm ( container w h middle (flow down [(spacer 50 50), mindmap]))
     in collage w h [fullWindow]
 
-renderTree : RenderNode -> (Int, Int) -> Element
-renderTree (RenderNode n) (w,h) = collage w (h - 50) [n.form]
+renderTree : MM_State -> (Int, Int) -> Element
+renderTree state (w,h) = collage w (h - 50) []
 
 -- renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) )
 -- -- |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
