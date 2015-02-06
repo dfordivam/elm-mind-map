@@ -12,26 +12,24 @@ import MM_Node (..)
 import MM_Action (..)
 -- Tree of rendered nodes
 
-type RenderNode 
-    = RenderNode
+type alias RenderNode 
+    =
     {   form        :   Form
     ,   selected    :   Bool
     ,   uid         :   Int
-    ,   childNodes  :   List RenderNode
     }
 
 createNodeForm : MM_Node -> Form
-createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText ("Dummy Node" ))) 
+createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText (n.nodeName))) 
     |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode (getNodeId n))))
 
-getNodeId _ = 0
+getNodeId n = n.id
 getChildNodes _ = []
 
 renderMM_Node : MM_Node -> RenderNode
-renderMM_Node n = RenderNode {
+renderMM_Node n = {
             form = createNodeForm n
        ,    selected = False
-       ,    uid = getNodeId n
-       ,    childNodes = map renderMM_Node (getChildNodes n)
+       ,    uid = n.id
    }
         
