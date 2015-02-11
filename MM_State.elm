@@ -39,3 +39,6 @@ emptyState =
 
 getNodeWithId : Int -> MM_State -> MM_Node
 getNodeWithId id state = Maybe.withDefault state.rootMNode (get id state.nodes)
+
+getRenderNodeWithId : Int -> MM_State -> RenderNode
+getRenderNodeWithId id state = Maybe.withDefault (renderMM_Node (getNodeWithId 0 state)) (get id state.renderNodes)

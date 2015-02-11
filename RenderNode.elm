@@ -21,10 +21,7 @@ type alias RenderNode
 
 createNodeForm : MM_Node -> Form
 createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText (n.nodeName))) 
-    |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode (getNodeId n))))
-
-getNodeId n = n.id
-getChildNodes _ = []
+    |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode n.id)))
 
 renderMM_Node : MM_Node -> RenderNode
 renderMM_Node n = {

@@ -11,7 +11,7 @@ type MM_Tree = MM_Tree
     ,  childNodes   : List MM_Tree
     }
 
-getNodeID (MM_Tree n) = n.id
+getNodeId (MM_Tree n) = n.id
 getChildNodes (MM_Tree n) = n.childNodes
 getTreeNodeWithId id n = n
 
@@ -47,9 +47,9 @@ getTreeNodeWithId id n = n
 addNode : MM_Tree -> MM_Tree -> Int -> MM_Tree
 addNode r n j =
     let newN = MM_Tree { id = j, childNodes = [] }
-        parents = reverse (findAllParents (getNodeID n) r)
+        parents = reverse (findAllParents (getNodeId n) r)
         c = getChildNodes n
-        add_node_new = MM_Tree { id = getNodeID n, childNodes = (newN :: c) }
+        add_node_new = MM_Tree { id = getNodeId n, childNodes = (newN :: c) }
     in (updateParentNodes add_node_new parents)
 
 -- Takes an input "new" node (which is part of new tree)
@@ -62,7 +62,7 @@ updateParentNodes newN parentList =
     if parentList == [] then newN else
        let p = head parentList
            c = getChildNodes p
-       in updateParentNodes (MM_Tree { id = (getNodeID p), childNodes = newN :: c}) (tail parentList)
+       in updateParentNodes (MM_Tree { id = (getNodeId p), childNodes = newN :: c}) (tail parentList)
        --in updateParentNodes newN (tail parentList)
 
 
@@ -79,7 +79,7 @@ isChild id (MM_Tree r) =
 -- Node ID -> Root Node -> [Root :: All other parents]
 findAllParents : Int -> MM_Tree -> List MM_Tree
 findAllParents id r = 
-    if (id == getNodeID r) 
+    if (id == getNodeId r) 
        then [] 
        else let foundNode = isChild id r
             in if foundNode 

@@ -11,6 +11,7 @@ import Text
 import MM_Node (..)
 import MM_State (..)
 import RenderNode (..)
+import MM_Tree (..)
 
 ---- View ----
 -- There is a main frame to draw the whole map (It is big collage)
@@ -29,7 +30,42 @@ view (w,h) state =
     in collage w h [fullWindow]
 
 renderTree : MM_State -> (Int, Int) -> Element
-renderTree state (w,h) = collage w (h - 50) []
+renderTree state (w,h) = 
+        -- Render Subtree of all Childrens left/right Adjusted
+    let renderChildSubTree : List MM_Tree -> Direction -> (Form, (Float, Float))
+        renderChildSubTree children dir = 
+            let childRenderTree = map2 recursiveRenderNode children (repeat (length children) dir)
+
+                heights  = map (\(_, (_,x)) -> x) childRenderTree
+                widths   = map (\(_, (x,_)) -> x) childRenderTree
+                totalH   = sum heights
+                totalW   = maximum widths 
+
+                offsetY  = map2 makeOffsetY heights (0 :: heights)
+                makeOffsetY a b = (totalH/2) - (a / 2) - b
+
+                offsetX  = map makeOffsetX widths
+                makeOffsetX a = (totalW - a)/2
+
+                subTrees = map (\(x, (_,_)) -> x) childRenderTree
+                xShifted = map2 moveX offsetX subTrees 
+                yShifted = map2 moveY offsetY xShifted
+
+                fullSubTree = group yShifted
+            in  (fullSubTree, (totalW, totalH))
+
+        recursiveRenderNode : MM_Tree -> Direction -> (Form, (Float, Float))
+        recursiveRenderNode tree dir = 
+            let (childSubTree, (w1, h1)) = renderChildSubTree (getChildNodes tree) dir
+                node = getNodeWithId (getNodeId tree) state
+                rNode = getRenderNodeWithId (getNodeId tree) state
+                rNodeShift = if dir == left then (w1/2) + 30 else (w1/2) - 30
+                subTreeShift = if dir == left then -60 else 60
+                full = group [moveX subTreeShift childSubTree,
+                        moveX rNodeShift rNode.form]
+            in (full, (((w1 + 60), h1)))
+
+    in collage w (h - 50) []  
 
 -- renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) )
 -- -- |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
