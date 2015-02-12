@@ -65,7 +65,9 @@ renderTree state (w,h) =
                         moveX rNodeShift rNode.form]
             in (full, (((w1 + 60), h1)))
 
-    in collage w (h - 50) []  
+        (mmTree, (_,_)) = recursiveRenderNode state.rootNode right
+
+    in collage w (h - 50) [mmTree]
 
 -- renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) )
 -- -- |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
