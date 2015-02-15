@@ -38,8 +38,8 @@ renderTree state (w,h) =
 
                 heights  = map (\(_, (_,x)) -> x) childRenderTree
                 widths   = map (\(_, (x,_)) -> x) childRenderTree
-                totalH   = sum heights
-                totalW   = maximum widths 
+                totalH   = if heights == [] then 0 else sum heights
+                totalW   = if heights == [] then 0 else maximum widths 
 
                 offsetY  = map2 makeOffsetY heights (0 :: heights)
                 makeOffsetY a b = (totalH/2) - (a / 2) - b
