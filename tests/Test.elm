@@ -1,6 +1,7 @@
 module MindMap where
 import Graphics.Collage (..)
 import Color (..)
+import Debug
 
 -- Testing simple Collage APIs
 -- main = 
@@ -15,4 +16,4 @@ import Color (..)
 import MM_StateMock (..)
 import RenderMap
 
-main = RenderMap.view (500, 500) twoNodes
+main = RenderMap.view (500, 500) (Debug.log "twonodes" twoNodes)
