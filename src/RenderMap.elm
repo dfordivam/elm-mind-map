@@ -39,13 +39,14 @@ renderTree state (w,h) =
 
                 heights  = map (\(_, (_,x)) -> x) childRenderTree
                 widths   = map (\(_, (x,_)) -> x) childRenderTree
-                totalH   = Debug.log "tH" (if heights == [] then 0 else sum heights)
+                totalH   = (if heights == [] then 0 else sum heights)
                 totalW   = (if heights == [] then 0 else maximum widths )
 
                 cummHeight : Int -> List Int -> List Int
                 cummHeight s l = if l == [] then [] else s :: (cummHeight (s + head l) (tail l)) 
+
                 offsetY  = map2 makeOffsetY heights (cummHeight 0 heights)
-                makeOffsetY a b = Debug.log "h" ((toFloat totalH)/2 - (toFloat a) / 2 - (toFloat b))
+                makeOffsetY a b = ((toFloat a) / 2 + (toFloat b) - (toFloat totalH)/2 )
 
                 offsetX  = map makeOffsetX widths
                 makeOffsetX a = 
@@ -66,8 +67,8 @@ renderTree state (w,h) =
             let (childSubTree, (w1, h1)) = renderChildSubTree (getChildNodes tree) dir
                 node = getNodeWithId (getNodeId tree) state
                 rNode = getRenderNodeWithId (getNodeId tree) state
-                half_w1 = (toFloat w1)/2
-                rNodeShift = (if w1 == 0 then 0 else (if dir == left then 120 - half_w1 else half_w1 - 120))
+                half_w1 = (toFloat newW)/2
+                rNodeShift = (if w1 == 0 then 0 else (if dir == left then half_w1 - 60 else 60 - half_w1))
                 subTreeShift = (if dir == left then -60 else 60)
                 full = [moveX subTreeShift (toForm childSubTree),
                         moveX rNodeShift rNode.form]
@@ -75,7 +76,7 @@ renderTree state (w,h) =
                 newW = w1 + 120
             in (collage newW newH full, (newW, newH))
 
-        (mmTree, (_,_)) = recursiveRenderNode state.rootNode left
+        (mmTree, (_,_)) = recursiveRenderNode state.rootNode right
 
     in mmTree
 

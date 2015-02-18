@@ -45,9 +45,10 @@ getRenderNodeWithId id state = Maybe.withDefault (renderMM_Node (getNodeWithId 0
 
 addNode : MM_State -> String -> Int -> MM_State
 addNode state name id = 
-    let newRoot = addTreeNode state.rootNode state.rootNode newId
+    let newRoot = addTreeNode state.rootNode editNode newId
         newId = state.uid + 1
         newNode = newMM_Node name newId
+        editNode = getTreeNodeWithId id state.rootNode
     in { state | rootNode <- newRoot
         , nodes <- push newNode state.nodes
         , uid <- newId

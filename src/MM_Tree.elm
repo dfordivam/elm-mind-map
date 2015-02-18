@@ -1,6 +1,7 @@
 module MM_Tree where
 
 import List (..)
+import Maybe
 
 -- The Mind Map Node's structure is a tree representation
 -- Its heirarchy is represented by this minimal data structure
@@ -13,7 +14,15 @@ type MM_Tree = MM_Tree
 
 getNodeId (MM_Tree n) = n.id
 getChildNodes (MM_Tree n) = n.childNodes
-getTreeNodeWithId id n = n
+
+getTreeNodeWithId : Int -> MM_Tree -> MM_Tree
+getTreeNodeWithId id n =
+    let findForNode : MM_Tree -> Maybe MM_Tree
+        findForNode n1 = 
+            let foundList = filter (\x -> (getNodeId x) == id) (n1 :: (getChildNodes n1))
+            in if foundList == [] then Maybe.oneOf (map findForNode (getChildNodes n1)) else Just (head foundList)
+    in Maybe.withDefault n (findForNode n)
+
 
 -- How to add to tree
 -- 1. Create new empty node
@@ -61,7 +70,7 @@ updateParentNodes : MM_Tree -> List MM_Tree -> MM_Tree
 updateParentNodes newN parentList =
     if parentList == [] then newN else
        let p = head parentList
-           c = getChildNodes p
+           c = filter (\x ->  (getNodeId x) /= (getNodeId newN)) ( getChildNodes p)
        in updateParentNodes (MM_Tree { id = (getNodeId p), childNodes = newN :: c}) (tail parentList)
        --in updateParentNodes newN (tail parentList)
 
