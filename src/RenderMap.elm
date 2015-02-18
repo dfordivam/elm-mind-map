@@ -7,6 +7,7 @@ import List (..)
 import Color (..)
 import Signal
 import Text
+import Debug
 
 import MM_Node (..)
 import MM_State (..)
@@ -32,42 +33,50 @@ view (w,h) state =
 renderTree : MM_State -> (Int, Int) -> Element
 renderTree state (w,h) = 
         -- Render Subtree of all Childrens left/right Adjusted
-    let renderChildSubTree : List MM_Tree -> Direction -> (Form, (Float, Float))
+    let renderChildSubTree : List MM_Tree -> Direction -> (Element, (Float, Float))
         renderChildSubTree children dir = 
             let childRenderTree = map2 recursiveRenderNode children (repeat (length children) dir)
 
                 heights  = map (\(_, (_,x)) -> x) childRenderTree
                 widths   = map (\(_, (x,_)) -> x) childRenderTree
-                totalH   = if heights == [] then 0 else sum heights
-                totalW   = if heights == [] then 0 else maximum widths 
+                totalH   = (if heights == [] then 0 else sum heights)
+                totalW   = (if heights == [] then 0 else maximum widths )
 
                 offsetY  = map2 makeOffsetY heights (0 :: heights)
                 makeOffsetY a b = (totalH/2) - (a / 2) - b
 
                 offsetX  = map makeOffsetX widths
-                makeOffsetX a = (totalW - a)/2
+                makeOffsetX a = 
+                    let val = (totalW - a)/2
+                    in if (dir == left) then val else -val
 
-                subTrees = map (\(x, (_,_)) -> x) childRenderTree
+                subTrees = map (\(x, (_,_)) -> toForm x) childRenderTree
                 xShifted = map2 moveX offsetX subTrees 
                 yShifted = map2 moveY offsetY xShifted
 
-                fullSubTree = group yShifted
-            in  (fullSubTree, (totalW, totalH))
+                subTreeOutline = outlined (dashed green) (rect (totalW + 5) (totalH + 5))
 
-        recursiveRenderNode : MM_Tree -> Direction -> (Form, (Float, Float))
+                fullSubTree = subTreeOutline :: yShifted
+                w_int = 200
+                h_int = 200
+            in  (collage w_int h_int fullSubTree, (totalW, totalH))
+
+        recursiveRenderNode : MM_Tree -> Direction -> (Element, (Float, Float))
         recursiveRenderNode tree dir = 
             let (childSubTree, (w1, h1)) = renderChildSubTree (getChildNodes tree) dir
                 node = getNodeWithId (getNodeId tree) state
                 rNode = getRenderNodeWithId (getNodeId tree) state
-                rNodeShift = if dir == left then (w1/2) + 30 else (w1/2) - 30
-                subTreeShift = if dir == left then -60 else 60
-                full = group [moveX subTreeShift childSubTree,
+                rNodeShift = (if w1 == 0 then 0 else (if dir == left then 120 - w1/2 else w1/2 - 120))
+                subTreeShift = (if dir == left then -60 else 60)
+                full = [moveX subTreeShift (toForm childSubTree),
                         moveX rNodeShift rNode.form]
-            in (full, (((w1 + 60), h1)))
+                newH = if h1 > 60 then h1 else 60
+                newW = w1 + 120
+            in (collage 500 500 full, (newW, newH))
 
         (mmTree, (_,_)) = recursiveRenderNode state.rootNode right
 
-    in collage w (h - 50) [mmTree]
+    in mmTree
 
 -- renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) )
 -- -- |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
