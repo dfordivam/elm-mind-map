@@ -82,7 +82,8 @@ renderTree state (w,h) =
                 (leftSubTree, (lw, lh)) = renderChildSubTree leftChildren left
                 (rightSubTree, (rw, rh)) = renderChildSubTree rightChildren right
                 totalH = maximum [lh, rh, 60]
-                totalW = sum [lw, rw, 120]
+                moreW = if lw > rw then lw else rw
+                totalW = 2*moreW + 120
 
                 rNode = getRenderNodeWithId (getNodeId tree) state
 

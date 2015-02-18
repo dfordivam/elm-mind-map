@@ -25,6 +25,6 @@ eightChild : MM_State
 eightChild = 
     let r5 = addNode fourChild "Node5" 0
         r6 = addNode r5 "Node6" 5
-        r7 = addNode r6 "Node7" 6
+        r7 = addNode r6 "Node7" 5
         r8 = addNode r7 "Node8" 2
     in r8
