@@ -76,9 +76,21 @@ renderTree state (w,h) =
                 newW = w1 + 120
             in (collage newW newH full, (newW, newH))
 
-        (mmTree, (_,_)) = recursiveRenderNode state.rootNode left
+        renderRootNode : MM_Tree -> Element
+        renderRootNode tree = 
+            let (leftChildren, rightChildren) = evenAndOdd True (getChildNodes tree)
+                (leftSubTree, (lw, lh)) = renderChildSubTree leftChildren left
+                (rightSubTree, (rw, rh)) = renderChildSubTree rightChildren right
+                totalH = maximum [lh, rh, 60]
+                totalW = sum [lw, rw, 120]
 
-    in mmTree
+                rNode = getRenderNodeWithId (getNodeId tree) state
+
+                full = [moveX -((toFloat lw)/2 + 60) (toForm leftSubTree), rNode.form, moveX ((toFloat rw)/2 + 60) (toForm rightSubTree)]
+
+            in  (collage totalW totalH full)
+
+    in renderRootNode state.rootNode
 
 -- renderNodeTxt txt id = (color grey (container 100 50 middle (Text.plainText (txt ))) )
 -- -- |> Graphics.Input.clickable (Signal.send clicks (SelectNode id)))
@@ -91,12 +103,12 @@ renderTree state (w,h) =
 --       (MM_RootNode node) ->
 --         size 100 height (container 100 height middle (renderNodeTxt node.text 0))
 -- 
--- evenAndOdd : Bool -> List a -> (List a, List a)
--- evenAndOdd right list = 
---     if list == [] then ([],[]) 
---     else let n = head list
---              (l, r) = evenAndOdd (not right) (tail list)
---          in if right then (l, n :: r) else (n :: l, r)
+evenAndOdd : Bool -> List a -> (List a, List a)
+evenAndOdd right list = 
+    if list == [] then ([],[]) 
+    else let n = head list
+             (l, r) = evenAndOdd (not right) (tail list)
+         in if right then (l, n :: r) else (n :: l, r)
 -- 
 -- createChildSubtreeContainer : Int -> Position -> Int -> Element -> Element
 -- createChildSubtreeContainer w p h e = container w h p e
