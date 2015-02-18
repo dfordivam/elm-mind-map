@@ -16,4 +16,4 @@ import Debug
 import MM_StateMock (..)
 import RenderMap
 
-main = RenderMap.view (500, 500) (Debug.log "twonodes" twoNodes)
+main = RenderMap.view (1000, 1000) (Debug.log "mm" fourChild)

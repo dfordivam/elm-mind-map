@@ -33,48 +33,49 @@ view (w,h) state =
 renderTree : MM_State -> (Int, Int) -> Element
 renderTree state (w,h) = 
         -- Render Subtree of all Childrens left/right Adjusted
-    let renderChildSubTree : List MM_Tree -> Direction -> (Element, (Float, Float))
+    let renderChildSubTree : List MM_Tree -> Direction -> (Element, (Int, Int))
         renderChildSubTree children dir = 
             let childRenderTree = map2 recursiveRenderNode children (repeat (length children) dir)
 
                 heights  = map (\(_, (_,x)) -> x) childRenderTree
                 widths   = map (\(_, (x,_)) -> x) childRenderTree
-                totalH   = (if heights == [] then 0 else sum heights)
+                totalH   = Debug.log "tH" (if heights == [] then 0 else sum heights)
                 totalW   = (if heights == [] then 0 else maximum widths )
 
-                offsetY  = map2 makeOffsetY heights (0 :: heights)
-                makeOffsetY a b = (totalH/2) - (a / 2) - b
+                cummHeight : Int -> List Int -> List Int
+                cummHeight s l = if l == [] then [] else s :: (cummHeight (s + head l) (tail l)) 
+                offsetY  = map2 makeOffsetY heights (cummHeight 0 heights)
+                makeOffsetY a b = Debug.log "h" ((toFloat totalH)/2 - (toFloat a) / 2 - (toFloat b))
 
                 offsetX  = map makeOffsetX widths
                 makeOffsetX a = 
-                    let val = (totalW - a)/2
+                    let val = ((toFloat totalW) - (toFloat a))/2
                     in if (dir == left) then val else -val
 
                 subTrees = map (\(x, (_,_)) -> toForm x) childRenderTree
                 xShifted = map2 moveX offsetX subTrees 
                 yShifted = map2 moveY offsetY xShifted
 
-                subTreeOutline = outlined (dashed green) (rect (totalW + 5) (totalH + 5))
+                subTreeOutline = outlined (dashed green) (rect ((toFloat totalW) - 5) ((toFloat totalH) - 5))
 
                 fullSubTree = subTreeOutline :: yShifted
-                w_int = 200
-                h_int = 200
-            in  (collage w_int h_int fullSubTree, (totalW, totalH))
+            in  (collage totalW totalH fullSubTree, (totalW, totalH))
 
-        recursiveRenderNode : MM_Tree -> Direction -> (Element, (Float, Float))
+        recursiveRenderNode : MM_Tree -> Direction -> (Element, (Int, Int))
         recursiveRenderNode tree dir = 
             let (childSubTree, (w1, h1)) = renderChildSubTree (getChildNodes tree) dir
                 node = getNodeWithId (getNodeId tree) state
                 rNode = getRenderNodeWithId (getNodeId tree) state
-                rNodeShift = (if w1 == 0 then 0 else (if dir == left then 120 - w1/2 else w1/2 - 120))
+                half_w1 = (toFloat w1)/2
+                rNodeShift = (if w1 == 0 then 0 else (if dir == left then 120 - half_w1 else half_w1 - 120))
                 subTreeShift = (if dir == left then -60 else 60)
                 full = [moveX subTreeShift (toForm childSubTree),
                         moveX rNodeShift rNode.form]
                 newH = if h1 > 60 then h1 else 60
                 newW = w1 + 120
-            in (collage 500 500 full, (newW, newH))
+            in (collage newW newH full, (newW, newH))
 
-        (mmTree, (_,_)) = recursiveRenderNode state.rootNode right
+        (mmTree, (_,_)) = recursiveRenderNode state.rootNode left
 
     in mmTree
 

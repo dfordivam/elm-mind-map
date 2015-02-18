@@ -44,8 +44,8 @@ getTreeNodeWithId id n = n
 -- +--------------------------------------------------------------+
 
 -- root -> add_node -> new_node_id -> newRoot
-addNode : MM_Tree -> MM_Tree -> Int -> MM_Tree
-addNode r n j =
+addTreeNode : MM_Tree -> MM_Tree -> Int -> MM_Tree
+addTreeNode r n j =
     let newN = MM_Tree { id = j, childNodes = [] }
         parents = reverse (findAllParents (getNodeId n) r)
         c = getChildNodes n
