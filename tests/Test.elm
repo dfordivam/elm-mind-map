@@ -16,4 +16,4 @@ import Debug
 import MM_StateMock (..)
 import RenderMap
 
-main = RenderMap.view (1000, 1000) (Debug.log "mm" fourChild)
+main = RenderMap.view (1000, 1000) (Debug.log "mm" eightChild)
