@@ -76,7 +76,7 @@ renderTree state (w,h) =
                 newW = w1 + 120
             in (collage newW newH full, (newW, newH))
 
-        (mmTree, (_,_)) = recursiveRenderNode state.rootNode right
+        (mmTree, (_,_)) = recursiveRenderNode state.rootNode left
 
     in mmTree
 
