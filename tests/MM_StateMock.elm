@@ -27,4 +27,4 @@ eightChild =
         r6 = addNode r5 "Node6" 5
         r7 = addNode r6 "Node7" 5
         r8 = addNode r7 "Node8" 2
-    in r8
+    in { r8 | selectedNodes <- [0,2,4,5,6,7]  }

@@ -13,6 +13,8 @@ import MM_Node (..)
 import MM_State (..)
 import RenderNode (..)
 import MM_Tree (..)
+import MM_Action (..)
+
 
 ---- View ----
 -- There is a main frame to draw the whole map (It is big collage)
@@ -27,8 +29,11 @@ import MM_Tree (..)
 view : (Int, Int) -> MM_State -> Element
 view (w,h) state =
     let mindmap = renderTree state (w,h)
-        fullWindow = toForm ( container w h middle (flow down [(spacer 50 50), mindmap]))
+        fullWindow = toForm ( container w h middle (flow down [renderHeader, (spacer 50 50), mindmap]))
     in collage w h [fullWindow]
+
+renderHeader : Element
+renderHeader = Graphics.Input.button (Signal.send mm_channel (AddNode 0)) "Test"
 
 renderTree : MM_State -> (Int, Int) -> Element
 renderTree state (w,h) = 
@@ -76,16 +81,28 @@ renderTree state (w,h) =
  
             in  (collage (totalW+20) totalH (lineS::fullSubTree), (totalW, totalH))
 
+        getRenderedNode : MM_Tree -> Form
+        getRenderedNode tree = 
+            let rNode = getRenderNodeWithId (getNodeId tree) state
+                lineStl = {defaultLine | width <- 8, color <- blue}
+                outLinedNode = outlined (lineStl) (rect 100 50)
+                selected = filter (\x -> x == getNodeId tree) state.selectedNodes 
+                rendered = if (selected == []) 
+                              then rNode.form
+                              else group [outLinedNode, rNode.form]
+            in rendered
+
+
         recursiveRenderNode : MM_Tree -> Direction -> (Element, (Int, Int))
         recursiveRenderNode tree dir = 
             let (childSubTree, (w1, h1)) = renderChildSubTree (getChildNodes tree) dir
-                node = getNodeWithId (getNodeId tree) state
-                rNode = getRenderNodeWithId (getNodeId tree) state
+
                 half_w1 = (toFloat newW)/2
                 rNodeShift = (if w1 == 0 then 0 else (if dir == left then half_w1 - 60 else 60 - half_w1))
                 subTreeShift = (if dir == left then -60 else 60)
-                full = [moveX subTreeShift (toForm childSubTree),
-                        moveX rNodeShift rNode.form]
+                full = [moveX rNodeShift (getRenderedNode tree)
+                    , moveX subTreeShift (toForm childSubTree)]
+
                 newH = if h1 > 60 then h1 else 60
                 newW = w1 + 120
             in (collage newW newH full, (newW, newH))
@@ -99,9 +116,9 @@ renderTree state (w,h) =
                 moreW = if lw > rw then lw else rw
                 totalW = 2*moreW + 120
 
-                rNode = getRenderNodeWithId (getNodeId tree) state
-
-                full = [moveX -((toFloat lw)/2 + 60) (toForm leftSubTree), rNode.form, moveX ((toFloat rw)/2 + 60) (toForm rightSubTree)]
+                full = [moveX -((toFloat lw)/2 + 60) (toForm leftSubTree)
+                       , getRenderedNode tree
+                       , moveX ((toFloat rw)/2 + 60) (toForm rightSubTree)]
 
             in  (collage totalW totalH full)
 
