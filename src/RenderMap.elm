@@ -60,7 +60,21 @@ renderTree state (w,h) =
                 subTreeOutline = outlined (dashed green) (rect ((toFloat totalW) - 5) ((toFloat totalH) - 5))
 
                 fullSubTree = subTreeOutline :: yShifted
-            in  (collage totalW totalH fullSubTree, (totalW, totalH))
+
+                -- 
+                -- segment (0,0) (10,10)
+                segmentStart = 
+                    let val = (toFloat totalW)/2+10
+                    in if dir == left then (val,0) else (-val,0)
+                segmentEnds = 
+                    let val = (toFloat totalW)/2-10
+                        xpos = if dir == left then val else -val
+                    in map2 (\x y -> (x,y)) (repeat (length children) xpos) offsetY
+                allSegments = map (segment segmentStart) segmentEnds
+                lineStyle = {defaultLine | color <- darkGrey} 
+                lineS = group (map (traced lineStyle) allSegments)
+ 
+            in  (collage (totalW+20) totalH (lineS::fullSubTree), (totalW, totalH))
 
         recursiveRenderNode : MM_Tree -> Direction -> (Element, (Int, Int))
         recursiveRenderNode tree dir = 
