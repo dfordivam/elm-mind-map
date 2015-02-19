@@ -33,7 +33,7 @@ view (w,h) state =
     in collage w h [fullWindow]
 
 renderHeader : Element
-renderHeader = Graphics.Input.button (Signal.send mm_channel (AddNode 0)) "Test"
+renderHeader = Graphics.Input.button (Signal.send mm_channel AddNode) "Add New Node"
 
 renderTree : MM_State -> (Int, Int) -> Element
 renderTree state (w,h) = 

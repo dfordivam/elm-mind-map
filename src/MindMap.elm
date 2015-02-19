@@ -35,14 +35,4 @@ step action state =
         let selectedNode = getNodeWithId id state
         in { state | editNode <- selectedNode, selectedNodes <- [id] }
 
-      AddNode id ->
-        let node = getTreeNodeWithId id state.rootNode
-            newN = newMM_Node "" newId
-            newId = (state.uid + 1)
-            updatedRoot = addNode state.rootNode node (state.uid + 1)
-        in { state | 
-                uid <- newId
-           ,    rootNode <- updatedRoot
-           ,    editNode <- newN
-           ,    nodes <- Array.set newId newN (Array.fromList [])
-       }
+      AddNode -> addNode state "NewNode" (head state.selectedNodes)
