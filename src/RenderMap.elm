@@ -28,9 +28,9 @@ import MM_Action (..)
 
 view : (Int, Int) -> MM_State -> Element
 view (w,h) state =
-    let mindmap = renderTree state (w,h)
-        fullWindow = toForm ( container w h middle (flow down [renderHeader, (spacer 50 50), mindmap]))
-    in collage w h [fullWindow]
+    let mindmap = renderTree state (w,h-100)
+        fullWindow = toForm ( container w (h - 100) middle (flow down [mindmap]))
+    in collage w h [moveY ((toFloat h)/2 - 50) (toForm renderHeader), fullWindow]
 
 renderHeader : Element
 renderHeader = Graphics.Input.button (Signal.send mm_channel AddNode) "Add New Node"

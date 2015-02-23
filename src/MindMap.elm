@@ -28,7 +28,7 @@ startingState = emptyState
 
 step : Action -> MM_State -> MM_State
 step action state = 
-    case Debug.watch "Current action : " action of
+    case action of
       NoOp -> state
 
       SelectNode id ->
