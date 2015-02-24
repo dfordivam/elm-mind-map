@@ -1,6 +1,7 @@
 module RenderMap where
 
 import Graphics.Input
+import Graphics.Input.Field as Field
 import Graphics.Element (..)
 import Graphics.Collage (..)
 import List (..)
@@ -26,17 +27,21 @@ import MM_Action (..)
 -- Mind map
 -- 
 
-view : (Int, Int) -> MM_State -> Element
-view (w,h) state =
-    let mindmap = renderTree state (w,h-100)
+view : (Int, Int) -> (MM_State, Field.Content) -> Element
+view (w,h) (state, fc) =
+    let mindmap = renderTree (state, fc) (w,h-100)
         fullWindow = toForm ( container w (h - 100) middle (flow down [mindmap]))
     in collage w h [moveY ((toFloat h)/2 - 50) (toForm renderHeader), fullWindow]
 
 renderHeader : Element
-renderHeader = Graphics.Input.button (Signal.send mm_channel AddNode) "Add New Node"
+renderHeader = container 200 100 middle (flow right 
+        [
+            Graphics.Input.button (Signal.send mm_channel AddNode) "Add New Node"
+        ,   Graphics.Input.button (Signal.send mm_channel EditNode) "Edit Node"
+        ])
 
-renderTree : MM_State -> (Int, Int) -> Element
-renderTree state (w,h) = 
+renderTree : (MM_State, Field.Content) -> (Int, Int) -> Element
+renderTree (state, fc) (w,h) = 
         -- Render Subtree of all Childrens left/right Adjusted
     let renderChildSubTree : List MM_Tree -> Direction -> (Element, (Int, Int))
         renderChildSubTree children dir = 
@@ -81,6 +86,8 @@ renderTree state (w,h) =
  
             in  (collage (totalW+20) totalH (lineS::fullSubTree), (totalW, totalH))
 
+        isEditingNode = state.editNode /= Nothing
+
         getRenderedNode : MM_Tree -> Form
         getRenderedNode tree = 
             let rNode = getRenderNodeWithId (getNodeId tree) state
@@ -90,7 +97,9 @@ renderTree state (w,h) =
                 rendered = if (selected == []) 
                               then rNode.form
                               else group [outLinedNode, rNode.form]
-            in rendered
+
+                editingNode = isEditingNode && (getEditNode state).id == (getNodeId tree)
+            in if (editingNode) then editNodeForm (getNodeWithId (getNodeId tree) state) fc else rendered
 
 
         recursiveRenderNode : MM_Tree -> Direction -> (Element, (Int, Int))

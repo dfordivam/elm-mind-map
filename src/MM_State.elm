@@ -15,7 +15,7 @@ import MM_Tree (..)
 type alias MM_State = 
     {  rootNode         : MM_Tree
     ,  rootMNode        : MM_Node
-    ,  editNode         : MM_Node
+    ,  editNode         : Maybe MM_Node
     ,  selectedNodes    : List Int
     ,  nodes            : Array MM_Node
     ,  uid              : Int
@@ -30,7 +30,7 @@ emptyState =
     in { 
             rootNode = root
        ,    rootMNode = rootN
-       ,    editNode = rootN
+       ,    editNode = Nothing
        ,    selectedNodes = [0]
        ,    nodes = fromList [rootN]
        ,    uid = 0
@@ -42,6 +42,8 @@ getNodeWithId id state = Maybe.withDefault state.rootMNode (get id state.nodes)
 
 getRenderNodeWithId : Int -> MM_State -> RenderNode
 getRenderNodeWithId id state = Maybe.withDefault (renderMM_Node (getNodeWithId 0 state)) (get id state.renderNodes)
+getEditNode : MM_State -> MM_Node
+getEditNode state = Maybe.withDefault state.rootMNode state.editNode
 
 addNode : MM_State -> String -> Int -> MM_State
 addNode state name id = 
