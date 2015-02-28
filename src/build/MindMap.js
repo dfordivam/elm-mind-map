@@ -2111,19 +2111,19 @@ Elm.MM_Action.make = function (_elm) {
              ,_0: a};
    };
    var getEnterAction = function () {
-      var nameSignal = A2($Signal.map,
+      var text = A2($Signal.map,
       function (_) {
          return _.string;
       },
       $Signal.subscribe(textField));
-      var actionSignal = A2($Signal.map,
+      var action = A2($Signal.map,
       function (x) {
          return EditNodeName(x);
       },
-      nameSignal);
+      text);
       return A2($Signal.sampleOn,
       entered,
-      actionSignal);
+      action);
    }();
    var TextField = function (a) {
       return {ctor: "TextField"
@@ -2168,9 +2168,6 @@ Elm.MM_Node.make = function (_elm) {
    _L = _N.List.make(_elm),
    _P = _N.Ports.make(_elm),
    $moduleName = "MM_Node";
-   var getNodeID = function (n) {
-      return n.id;
-   };
    var newMM_Node = F2(function (name,
    i) {
       return {_: {}
@@ -2191,8 +2188,7 @@ Elm.MM_Node.make = function (_elm) {
    });
    _elm.MM_Node.values = {_op: _op
                          ,MM_Node: MM_Node
-                         ,newMM_Node: newMM_Node
-                         ,getNodeID: getNodeID};
+                         ,newMM_Node: newMM_Node};
    return _elm.MM_Node.values;
 };
 Elm.MM_State = Elm.MM_State || {};
@@ -2356,7 +2352,7 @@ Elm.MM_Tree.make = function (_elm) {
    var getTreeNodeWithId = F2(function (id,
    n) {
       return function () {
-         var findForNode = function (n1) {
+         var findNode = function (n1) {
             return function () {
                var foundList = A2($List.filter,
                function (x) {
@@ -2368,13 +2364,13 @@ Elm.MM_Tree.make = function (_elm) {
                getChildNodes(n1)));
                return _U.eq(foundList,
                _L.fromArray([])) ? $Maybe.oneOf(A2($List.map,
-               findForNode,
+               findNode,
                getChildNodes(n1))) : $Maybe.Just($List.head(foundList));
             }();
          };
          return A2($Maybe.withDefault,
          n,
-         findForNode(n));
+         findNode(n));
       }();
    });
    var findAllParents = F2(function (id,
@@ -2400,17 +2396,15 @@ Elm.MM_Tree.make = function (_elm) {
       return _U.eq(parentList,
       _L.fromArray([])) ? newN : function () {
          var p = $List.head(parentList);
-         var c = A2($List.filter,
+         var c = A2($List.filterMap,
          function (x) {
             return !_U.eq(getNodeId(x),
-            getNodeId(newN));
+            getNodeId(newN)) ? $Maybe.Just(x) : $Maybe.Just(newN);
          },
          getChildNodes(p));
          return A2(updateParentNodes,
          MM_Tree({_: {}
-                 ,childNodes: A2($List._op["::"],
-                 newN,
-                 c)
+                 ,childNodes: c
                  ,id: getNodeId(p)}),
          $List.tail(parentList));
       }();
@@ -2427,9 +2421,9 @@ Elm.MM_Tree.make = function (_elm) {
                             ,childNodes: _L.fromArray([])
                             ,id: j});
          var add_node_new = MM_Tree({_: {}
-                                    ,childNodes: A2($List._op["::"],
-                                    newN,
-                                    c)
+                                    ,childNodes: A2($Basics._op["++"],
+                                    c,
+                                    _L.fromArray([newN]))
                                     ,id: getNodeId(n)});
          return A2(updateParentNodes,
          add_node_new,
@@ -7225,7 +7219,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return _v8._1._1;}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 50, column 48 to 49");
+                                     "on line 44, column 48 to 49");
                                   }();
                                },
                                childRenderTree);
@@ -7233,7 +7227,7 @@ Elm.RenderMap.make = function (_elm) {
                                _L.fromArray([])) ? 0 : $List.sum(heights);
                                var makeOffsetY = F2(function (a,
                                b) {
-                                  return $Basics.toFloat(a) / 2 + $Basics.toFloat(b) - $Basics.toFloat(totalH) / 2;
+                                  return $Basics.toFloat(totalH) / 2 - $Basics.toFloat(a) / 2 - $Basics.toFloat(b);
                                });
                                var offsetY = A3($List.map2,
                                makeOffsetY,
@@ -7249,7 +7243,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return _v14._1._0;}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 51, column 48 to 49");
+                                     "on line 45, column 48 to 49");
                                   }();
                                },
                                childRenderTree);
@@ -7310,7 +7304,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return $Graphics$Collage.toForm(_v20._0);}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 66, column 48 to 56");
+                                     "on line 60, column 48 to 56");
                                   }();
                                },
                                childRenderTree);
@@ -7352,7 +7346,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 107, column 44 to 87");
+                                  "on line 100, column 44 to 87");
                                }();
                                var h1 = function () {
                                   switch (_.ctor)
@@ -7362,7 +7356,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 107, column 44 to 87");
+                                  "on line 100, column 44 to 87");
                                }();
                                var w1 = function () {
                                   switch (_.ctor)
@@ -7372,7 +7366,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 107, column 44 to 87");
+                                  "on line 100, column 44 to 87");
                                }();
                                var newH = _U.cmp(h1,
                                60) > 0 ? h1 : 60;
@@ -7414,7 +7408,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 122, column 43 to 79");
+                                  "on line 115, column 43 to 79");
                                }();
                                var lh = function () {
                                   switch (_.ctor)
@@ -7424,7 +7418,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 122, column 43 to 79");
+                                  "on line 115, column 43 to 79");
                                }();
                                var lw = function () {
                                   switch (_.ctor)
@@ -7434,7 +7428,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 122, column 43 to 79");
+                                  "on line 115, column 43 to 79");
                                }();
                                var _ = A2(renderChildSubTree,
                                rightChildren,
@@ -7447,7 +7441,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 123, column 44 to 82");
+                                  "on line 116, column 44 to 82");
                                }();
                                var rightSubTree = function () {
                                   switch (_.ctor)
@@ -7456,7 +7450,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 123, column 44 to 82");
+                                  "on line 116, column 44 to 82");
                                }();
                                var rw = function () {
                                   switch (_.ctor)
@@ -7466,7 +7460,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 123, column 44 to 82");
+                                  "on line 116, column 44 to 82");
                                }();
                                var totalH = $List.maximum(_L.fromArray([lh
                                                                        ,rh
@@ -7490,10 +7484,10 @@ Elm.RenderMap.make = function (_elm) {
                          return renderRootNode(_v0._0.rootNode);
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 46 and 134");
+                 "between lines 40 and 127");
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 134");
+         "between lines 40 and 127");
       }();
    });
    var renderHeader = A4($Graphics$Element.container,
@@ -7544,10 +7538,10 @@ Elm.RenderMap.make = function (_elm) {
                                       ,fullWindow]));
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 32 and 34");
+                 "between lines 26 and 28");
               }();}
          _U.badCase($moduleName,
-         "between lines 32 and 34");
+         "between lines 26 and 28");
       }();
    });
    _elm.RenderMap.values = {_op: _op

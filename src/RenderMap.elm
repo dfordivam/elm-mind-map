@@ -50,7 +50,7 @@ renderTree (state, fc) (w,h) =
                 cummHeight s l = if l == [] then [] else s :: (cummHeight (s + head l) (tail l)) 
 
                 offsetY  = map2 makeOffsetY heights (cummHeight 0 heights)
-                makeOffsetY a b = ((toFloat a) / 2 + (toFloat b) - (toFloat totalH)/2 )
+                makeOffsetY a b = (toFloat totalH)/2 - (toFloat a) / 2 - (toFloat b)
 
                 offsetX  = map makeOffsetX widths
                 makeOffsetX a = 

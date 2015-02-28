@@ -58,7 +58,7 @@ addTreeNode r n j =
     let newN = MM_Tree { id = j, childNodes = [] }
         parents = reverse (findAllParents (getNodeId n) r)
         c = getChildNodes n
-        add_node_new = MM_Tree { id = getNodeId n, childNodes = (newN :: c) }
+        add_node_new = MM_Tree { id = getNodeId n, childNodes = (c ++ [newN]) }
     in (updateParentNodes add_node_new parents)
 
 -- Takes an input "new" node (which is part of new tree)
@@ -70,9 +70,9 @@ updateParentNodes : MM_Tree -> List MM_Tree -> MM_Tree
 updateParentNodes newN parentList =
     if parentList == [] then newN else
        let p = head parentList
-           c = filter (\x ->  (getNodeId x) /= (getNodeId newN)) ( getChildNodes p)
+           c = filterMap (\x ->  if ((getNodeId x) /= (getNodeId newN)) then Just x else Just newN ) ( getChildNodes p)
        in updateParentNodes 
-          (MM_Tree { id = (getNodeId p), childNodes = newN :: c}) 
+          (MM_Tree { id = (getNodeId p), childNodes = c}) 
           (tail parentList)
 
 
