@@ -58,7 +58,6 @@ type alias MM_Node =
     ,  text       : String
     ,  folded     : Bool
     ,  id         : Int
---    ,  style      : MM_NodeStyle
     } 
 
 -- Some APIs to work with Model
@@ -71,7 +70,3 @@ newMM_Node name i =
     ,  id         = i
     }
 
-getNodeID : MM_Node -> Int
-getNodeID n = n.id
-
--- type MM_NodeStyle = NoStyle

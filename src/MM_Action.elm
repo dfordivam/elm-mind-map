@@ -16,7 +16,7 @@ type Action
 mm_channel : Signal.Channel Action
 mm_channel = Signal.channel NoOp
 
-{-| An Input to keep track of the primary text field. -}
+-- Events from the primary text field.
 textField : Signal.Channel Field.Content
 textField = Signal.channel Field.noContent
 
@@ -25,9 +25,10 @@ textToAction = Signal.map (\x -> TextField x) (Signal.subscribe textField)
 
 getEnterAction : Signal Action
 getEnterAction = 
-    let nameSignal = Signal.map (.string) (Signal.subscribe textField)
-        actionSignal = Signal.map (\x -> EditNodeName x) nameSignal
-    in Signal.sampleOn entered actionSignal
+    let text = Signal.map (.string) (Signal.subscribe textField)
+        action = Signal.map (\x -> EditNodeName x) text
+    in Signal.sampleOn entered action
+
 {-| Signal that updates when the enter key is pressed. We will use it to sample
 other signals. Actual value of this signal is not important.
 -}

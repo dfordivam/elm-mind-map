@@ -3,7 +3,7 @@ module MM_Tree where
 import List (..)
 import Maybe
 
--- The Mind Map Node's structure is a tree representation
+-- The Mind Map is a tree
 -- Its heirarchy is represented by this minimal data structure
 -- Each MM_Node has one-to-one mapping with a MM_Tree node.
 
@@ -17,17 +17,17 @@ getChildNodes (MM_Tree n) = n.childNodes
 
 getTreeNodeWithId : Int -> MM_Tree -> MM_Tree
 getTreeNodeWithId id n =
-    let findForNode : MM_Tree -> Maybe MM_Tree
-        findForNode n1 = 
+    let findNode : MM_Tree -> Maybe MM_Tree
+        findNode n1 = 
             let foundList = filter (\x -> (getNodeId x) == id) (n1 :: (getChildNodes n1))
-            in if foundList == [] then Maybe.oneOf (map findForNode (getChildNodes n1)) else Just (head foundList)
-    in Maybe.withDefault n (findForNode n)
+            in if foundList == [] then Maybe.oneOf (map findNode (getChildNodes n1)) else Just (head foundList)
+    in Maybe.withDefault n (findNode n)
 
 
 -- How to add to tree
 -- 1. Create new empty node
 -- 2. Get a list of all parent nodes till root
--- 3. update all the parent nodes (starting from root) with new nodes 
+-- 3. update all the parent nodes with new child list 
 --    (ie create a new tree, with new root and new nodes)
 -- For eg. 
 -- 'addNode root n4 6' will modify n4, n2 and root; and will return root'
@@ -62,18 +62,18 @@ addTreeNode r n j =
     in (updateParentNodes add_node_new parents)
 
 -- Takes an input "new" node (which is part of new tree)
--- Create a new parent node by replacing old node with "new" node
--- recursively call the update on parent node till root
--- This API will return a new root node for new tree
+-- Create a new parent node by replacing old node with "new" node in child list
+-- recursively call the update on parent nodes till root
+-- This API will return a new root node
 -- InputNode -> ParentNodes -> NewRoot
 updateParentNodes : MM_Tree -> List MM_Tree -> MM_Tree
 updateParentNodes newN parentList =
     if parentList == [] then newN else
        let p = head parentList
            c = filter (\x ->  (getNodeId x) /= (getNodeId newN)) ( getChildNodes p)
-       in updateParentNodes (MM_Tree { id = (getNodeId p), childNodes = newN :: c}) (tail parentList)
-       --in updateParentNodes newN (tail parentList)
-
+       in updateParentNodes 
+          (MM_Tree { id = (getNodeId p), childNodes = newN :: c}) 
+          (tail parentList)
 
 
 -- DFS search for node

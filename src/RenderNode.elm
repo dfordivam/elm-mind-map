@@ -11,21 +11,24 @@ import Graphics.Input.Field as Field
 
 import MM_Node (..)
 import MM_Action (..)
--- Tree of rendered nodes
 
+-- Container to store the rendered view of a node.
 type alias RenderNode 
     =
     {   form        :   Form
-    ,   selected    :   Bool
+    ,   selected    :   Bool -- Not used
     ,   uid         :   Int
     }
 
+-- Render a clickable static node
 createNodeForm : MM_Node -> Form
 createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText (n.nodeName))) 
     |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode n.id)))
 
+-- Render a Text Field
 editNodeForm : MM_Node -> Field.Content -> Form
 editNodeForm n fieldContent = moveX 50 (toForm (Field.field Field.defaultStyle (Signal.send textField) "" fieldContent))
+
 
 renderMM_Node : MM_Node -> RenderNode
 renderMM_Node n = {
@@ -33,5 +36,4 @@ renderMM_Node n = {
        ,    selected = False
        ,    uid = n.id
    }
-
 

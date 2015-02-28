@@ -18,14 +18,8 @@ import MM_Action (..)
 
 
 ---- View ----
--- There is a main frame to draw the whole map (It is big collage)
--- The view has a header with controls and the rest is occupied with the map
---
--- Header view
--- Edit Button
-
--- Mind map
--- 
+-- The view has a header with some controls and the rest is occupied with the map
+-- There is a main frame/collage to draw the whole map
 
 view : (Int, Int) -> (MM_State, Field.Content) -> Element
 view (w,h) (state, fc) =
@@ -71,8 +65,7 @@ renderTree (state, fc) (w,h) =
 
                 fullSubTree = subTreeOutline :: yShifted
 
-                -- 
-                -- segment (0,0) (10,10)
+                -- Create line segments to join parent with children
                 segmentStart = 
                     let val = (toFloat totalW)/2+10
                     in if dir == left then (val,0) else (-val,0)
