@@ -7533,7 +7533,9 @@ Elm.RenderMap.make = function (_elm) {
                          _L.fromArray([A2($Graphics$Collage.moveY,
                                       $Basics.toFloat(_v71._1 - headerHeight) / 2,
                                       $Graphics$Collage.toForm(renderHeader))
-                                      ,fullWindow]));
+                                      ,A2($Graphics$Collage.moveY,
+                                      $Basics.toFloat(0 - headerHeight) / 2,
+                                      fullWindow)]));
                       }();}
                  _U.badCase($moduleName,
                  "between lines 26 and 28");

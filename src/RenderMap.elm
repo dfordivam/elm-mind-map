@@ -25,7 +25,7 @@ view : (Int, Int) -> (MM_State, Field.Content) -> Element
 view (w,h) (state, fc) =
     let mindmap = renderTree (state, fc) (w, h - headerHeight)
         fullWindow = toForm ( container w (h - headerHeight) middle (flow down [mindmap]))
-    in collage w h [moveY ((toFloat (h - headerHeight))/2) (toForm renderHeader), fullWindow]
+    in collage w h [moveY ((toFloat (h - headerHeight))/2) (toForm renderHeader), moveY (toFloat(-headerHeight)/2) fullWindow]
 
 headerHeight : Int
 headerHeight = 100
