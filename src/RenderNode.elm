@@ -28,9 +28,14 @@ createNodeForm : MM_Node -> Form
 createNodeForm n = toForm (color grey (container nodeWidth nodeHeight middle (Text.plainText (n.nodeName))) 
     |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode n.id)))
 
+fieldStyle = { highlight = { color = blue, width = 5 }
+             , padding =  Field.uniformly 5
+            , outline = { color = red, width = Field.uniformly 60, radius = 0 }
+            , style = Text.defaultStyle}
+
 -- Render a Text Field
 editNodeForm : MM_Node -> Field.Content -> Form
-editNodeForm n fieldContent = moveX ((toFloat nodeWidth)/2) (toForm (Field.field Field.defaultStyle (Signal.send textField) "" fieldContent))
+editNodeForm n fieldContent = moveX ((toFloat nodeWidth)/2) (toForm (Field.field fieldStyle (Signal.send textField) "" fieldContent))
 
 
 renderMM_Node : MM_Node -> RenderNode

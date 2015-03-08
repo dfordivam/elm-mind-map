@@ -7576,13 +7576,23 @@ Elm.RenderNode.make = function (_elm) {
    $MM_Node = Elm.MM_Node.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm);
+   var fieldStyle = {_: {}
+                    ,highlight: {_: {}
+                                ,color: $Color.blue
+                                ,width: 5}
+                    ,outline: {_: {}
+                              ,color: $Color.red
+                              ,radius: 0
+                              ,width: $Graphics$Input$Field.uniformly(60)}
+                    ,padding: $Graphics$Input$Field.uniformly(5)
+                    ,style: $Text.defaultStyle};
    var nodeWidth = 120;
    var editNodeForm = F2(function (n,
    fieldContent) {
       return A2($Graphics$Collage.moveX,
       $Basics.toFloat(nodeWidth) / 2,
       $Graphics$Collage.toForm(A4($Graphics$Input$Field.field,
-      $Graphics$Input$Field.defaultStyle,
+      fieldStyle,
       $Signal.send($MM_Action.textField),
       "",
       fieldContent)));
@@ -7618,6 +7628,7 @@ Elm.RenderNode.make = function (_elm) {
                             ,nodeHeight: nodeHeight
                             ,nodeWidth: nodeWidth
                             ,createNodeForm: createNodeForm
+                            ,fieldStyle: fieldStyle
                             ,editNodeForm: editNodeForm
                             ,renderMM_Node: renderMM_Node};
    return _elm.RenderNode.values;
