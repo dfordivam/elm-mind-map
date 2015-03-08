@@ -20,14 +20,17 @@ type alias RenderNode
     ,   uid         :   Int
     }
 
+nodeHeight = 60
+nodeWidth = 120
+
 -- Render a clickable static node
 createNodeForm : MM_Node -> Form
-createNodeForm n = toForm (color grey (container 100 50 middle (Text.plainText (n.nodeName))) 
+createNodeForm n = toForm (color grey (container nodeWidth nodeHeight middle (Text.plainText (n.nodeName))) 
     |> Graphics.Input.clickable (Signal.send mm_channel (SelectNode n.id)))
 
 -- Render a Text Field
 editNodeForm : MM_Node -> Field.Content -> Form
-editNodeForm n fieldContent = moveX 50 (toForm (Field.field Field.defaultStyle (Signal.send textField) "" fieldContent))
+editNodeForm n fieldContent = moveX ((toFloat nodeWidth)/2) (toForm (Field.field Field.defaultStyle (Signal.send textField) "" fieldContent))
 
 
 renderMM_Node : MM_Node -> RenderNode

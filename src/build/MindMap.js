@@ -7145,6 +7145,10 @@ Elm.RenderMap.make = function (_elm) {
                               ,_1: r};
       }();
    });
+   var nodeSpacingH = 30;
+   var nodeShiftH = $Basics.toFloat($RenderNode.nodeWidth + nodeSpacingH) / 2;
+   var nodeSpacingV = 20;
+   var nodeShiftV = $Basics.toFloat($RenderNode.nodeHeight + nodeSpacingV) / 2;
    var renderTree = F2(function (_v0,
    _v1) {
       return function () {
@@ -7173,8 +7177,8 @@ Elm.RenderMap.make = function (_elm) {
                                var outLinedNode = A2($Graphics$Collage.outlined,
                                lineStl,
                                A2($Graphics$Collage.rect,
-                               100,
-                               50));
+                               $RenderNode.nodeWidth,
+                               $RenderNode.nodeHeight));
                                var rNode = A2($MM_State.getRenderNodeWithId,
                                $MM_Tree.getNodeId(tree),
                                _v0._0);
@@ -7219,7 +7223,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return _v8._1._1;}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 44, column 48 to 49");
+                                     "on line 53, column 48 to 49");
                                   }();
                                },
                                childRenderTree);
@@ -7243,7 +7247,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return _v14._1._0;}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 45, column 48 to 49");
+                                     "on line 54, column 48 to 49");
                                   }();
                                },
                                childRenderTree);
@@ -7256,13 +7260,8 @@ Elm.RenderMap.make = function (_elm) {
                                      $Graphics$Element.left) ? val : 0 - val;
                                   }();
                                };
-                               var subTreeOutline = A2($Graphics$Collage.outlined,
-                               $Graphics$Collage.dashed($Color.green),
-                               A2($Graphics$Collage.rect,
-                               $Basics.toFloat(totalW) - 5,
-                               $Basics.toFloat(totalH) - 5));
                                var segmentStart = function () {
-                                  var val = $Basics.toFloat(totalW) / 2 + 10;
+                                  var val = ($Basics.toFloat(totalW) + nodeSpacingH) / 2;
                                   return _U.eq(dir,
                                   $Graphics$Element.left) ? {ctor: "_Tuple2"
                                                             ,_0: val
@@ -7271,7 +7270,7 @@ Elm.RenderMap.make = function (_elm) {
                                                                       ,_1: 0};
                                }();
                                var segmentEnds = function () {
-                                  var val = $Basics.toFloat(totalW) / 2 - 10;
+                                  var val = ($Basics.toFloat(totalW) - nodeSpacingH) / 2;
                                   var xpos = _U.eq(dir,
                                   $Graphics$Element.left) ? val : 0 - val;
                                   return A3($List.map2,
@@ -7304,7 +7303,7 @@ Elm.RenderMap.make = function (_elm) {
                                              return $Graphics$Collage.toForm(_v20._0);}
                                           break;}
                                      _U.badCase($moduleName,
-                                     "on line 60, column 48 to 56");
+                                     "on line 69, column 48 to 56");
                                   }();
                                },
                                childRenderTree);
@@ -7316,12 +7315,10 @@ Elm.RenderMap.make = function (_elm) {
                                $Graphics$Collage.moveY,
                                offsetY,
                                xShifted);
-                               var fullSubTree = A2($List._op["::"],
-                               subTreeOutline,
-                               yShifted);
+                               var fullSubTree = yShifted;
                                return {ctor: "_Tuple2"
                                       ,_0: A3($Graphics$Collage.collage,
-                                      totalW + 20,
+                                      totalW + nodeSpacingH,
                                       totalH,
                                       A2($List._op["::"],
                                       lineS,
@@ -7335,7 +7332,7 @@ Elm.RenderMap.make = function (_elm) {
                          dir) {
                             return function () {
                                var subTreeShift = _U.eq(dir,
-                               $Graphics$Element.left) ? -60 : 60;
+                               $Graphics$Element.left) ? 0 - nodeShiftH : nodeShiftH;
                                var _ = A2(renderChildSubTree,
                                $MM_Tree.getChildNodes(tree),
                                dir);
@@ -7346,7 +7343,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 100, column 44 to 87");
+                                  "on line 110, column 44 to 87");
                                }();
                                var h1 = function () {
                                   switch (_.ctor)
@@ -7356,7 +7353,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 100, column 44 to 87");
+                                  "on line 110, column 44 to 87");
                                }();
                                var w1 = function () {
                                   switch (_.ctor)
@@ -7366,15 +7363,15 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 100, column 44 to 87");
+                                  "on line 110, column 44 to 87");
                                }();
                                var newH = _U.cmp(h1,
-                               60) > 0 ? h1 : 60;
-                               var newW = w1 + 120;
-                               var half_w1 = $Basics.toFloat(newW) / 2;
+                               $RenderNode.nodeHeight + nodeSpacingV) > 0 ? h1 : $RenderNode.nodeHeight + nodeSpacingV;
+                               var newW = w1 + ($RenderNode.nodeWidth + nodeSpacingH);
+                               var half_w1 = $Basics.toFloat(newW) / 2 - nodeShiftH;
                                var rNodeShift = _U.eq(w1,
                                0) ? 0 : _U.eq(dir,
-                               $Graphics$Element.left) ? half_w1 - 60 : 60 - half_w1;
+                               $Graphics$Element.left) ? half_w1 : 0 - half_w1;
                                var full = _L.fromArray([A2($Graphics$Collage.moveX,
                                                        rNodeShift,
                                                        getRenderedNode(tree))
@@ -7408,7 +7405,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 115, column 43 to 79");
+                                  "on line 125, column 43 to 79");
                                }();
                                var lh = function () {
                                   switch (_.ctor)
@@ -7418,7 +7415,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 115, column 43 to 79");
+                                  "on line 125, column 43 to 79");
                                }();
                                var lw = function () {
                                   switch (_.ctor)
@@ -7428,7 +7425,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 115, column 43 to 79");
+                                  "on line 125, column 43 to 79");
                                }();
                                var _ = A2(renderChildSubTree,
                                rightChildren,
@@ -7441,7 +7438,7 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._1;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 116, column 44 to 82");
+                                  "on line 126, column 44 to 82");
                                }();
                                var rightSubTree = function () {
                                   switch (_.ctor)
@@ -7450,7 +7447,7 @@ Elm.RenderMap.make = function (_elm) {
                                        {case "_Tuple2": return _._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 116, column 44 to 82");
+                                  "on line 126, column 44 to 82");
                                }();
                                var rw = function () {
                                   switch (_.ctor)
@@ -7460,20 +7457,20 @@ Elm.RenderMap.make = function (_elm) {
                                           return _._1._0;}
                                        break;}
                                   _U.badCase($moduleName,
-                                  "on line 116, column 44 to 82");
+                                  "on line 126, column 44 to 82");
                                }();
                                var totalH = $List.maximum(_L.fromArray([lh
                                                                        ,rh
-                                                                       ,60]));
+                                                                       ,$RenderNode.nodeHeight + nodeSpacingV]));
                                var moreW = _U.cmp(lw,
                                rw) > 0 ? lw : rw;
-                               var totalW = 2 * moreW + 120;
+                               var totalW = 2 * moreW + ($RenderNode.nodeWidth + nodeSpacingH);
                                var full = _L.fromArray([A2($Graphics$Collage.moveX,
-                                                       0 - ($Basics.toFloat(lw) / 2 + 60),
+                                                       0 - ($Basics.toFloat(lw) / 2 + nodeShiftH),
                                                        $Graphics$Collage.toForm(leftSubTree))
                                                        ,getRenderedNode(tree)
                                                        ,A2($Graphics$Collage.moveX,
-                                                       $Basics.toFloat(rw) / 2 + 60,
+                                                       $Basics.toFloat(rw) / 2 + nodeShiftH,
                                                        $Graphics$Collage.toForm(rightSubTree))]);
                                return A3($Graphics$Collage.collage,
                                totalW,
@@ -7484,15 +7481,16 @@ Elm.RenderMap.make = function (_elm) {
                          return renderRootNode(_v0._0.rootNode);
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 40 and 127");
+                 "between lines 49 and 137");
               }();}
          _U.badCase($moduleName,
-         "between lines 40 and 127");
+         "between lines 49 and 137");
       }();
    });
+   var headerHeight = 100;
    var renderHeader = A4($Graphics$Element.container,
    200,
-   100,
+   headerHeight,
    $Graphics$Element.middle,
    A2($Graphics$Element.flow,
    $Graphics$Element.right,
@@ -7521,10 +7519,10 @@ Elm.RenderMap.make = function (_elm) {
                          ,_1: _v72._1},
                          {ctor: "_Tuple2"
                          ,_0: _v71._0
-                         ,_1: _v71._1 - 100});
+                         ,_1: _v71._1 - headerHeight});
                          var fullWindow = $Graphics$Collage.toForm(A4($Graphics$Element.container,
                          _v71._0,
-                         _v71._1 - 100,
+                         _v71._1 - headerHeight,
                          $Graphics$Element.middle,
                          A2($Graphics$Element.flow,
                          $Graphics$Element.down,
@@ -7533,7 +7531,7 @@ Elm.RenderMap.make = function (_elm) {
                          _v71._0,
                          _v71._1,
                          _L.fromArray([A2($Graphics$Collage.moveY,
-                                      $Basics.toFloat(_v71._1) / 2 - 50,
+                                      $Basics.toFloat(_v71._1 - headerHeight) / 2,
                                       $Graphics$Collage.toForm(renderHeader))
                                       ,fullWindow]));
                       }();}
@@ -7546,6 +7544,11 @@ Elm.RenderMap.make = function (_elm) {
    });
    _elm.RenderMap.values = {_op: _op
                            ,view: view
+                           ,headerHeight: headerHeight
+                           ,nodeSpacingV: nodeSpacingV
+                           ,nodeSpacingH: nodeSpacingH
+                           ,nodeShiftH: nodeShiftH
+                           ,nodeShiftV: nodeShiftV
                            ,renderHeader: renderHeader
                            ,renderTree: renderTree
                            ,evenAndOdd: evenAndOdd};
@@ -7573,24 +7576,26 @@ Elm.RenderNode.make = function (_elm) {
    $MM_Node = Elm.MM_Node.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm);
+   var nodeWidth = 120;
    var editNodeForm = F2(function (n,
    fieldContent) {
       return A2($Graphics$Collage.moveX,
-      50,
+      $Basics.toFloat(nodeWidth) / 2,
       $Graphics$Collage.toForm(A4($Graphics$Input$Field.field,
       $Graphics$Input$Field.defaultStyle,
       $Signal.send($MM_Action.textField),
       "",
       fieldContent)));
    });
+   var nodeHeight = 60;
    var createNodeForm = function (n) {
       return $Graphics$Collage.toForm($Graphics$Input.clickable(A2($Signal.send,
       $MM_Action.mm_channel,
       $MM_Action.SelectNode(n.id)))(A2($Graphics$Element.color,
       $Color.grey,
       A4($Graphics$Element.container,
-      100,
-      50,
+      nodeWidth,
+      nodeHeight,
       $Graphics$Element.middle,
       $Text.plainText(n.nodeName)))));
    };
@@ -7610,6 +7615,8 @@ Elm.RenderNode.make = function (_elm) {
    });
    _elm.RenderNode.values = {_op: _op
                             ,RenderNode: RenderNode
+                            ,nodeHeight: nodeHeight
+                            ,nodeWidth: nodeWidth
                             ,createNodeForm: createNodeForm
                             ,editNodeForm: editNodeForm
                             ,renderMM_Node: renderMM_Node};
